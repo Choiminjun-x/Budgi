@@ -18,22 +18,22 @@
 		B09F4A822F2247CE00411130 /* UICollectionView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A812F2247CE00411130 /* UICollectionView+Extension.swift */; };
 		B09F4A832F2247CE00411130 /* +Sets.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A7F2F2247CE00411130 /* +Sets.swift */; };
 		B09F4A842F2247CE00411130 /* Sets.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A802F2247CE00411130 /* Sets.swift */; };
-		B09F4A9C2F2248AE00411130 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A992F2248AE00411130 /* HomeView.swift */; };
+		B09F4A9C2F2248AE00411130 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A992F2248AE00411130 /* SettingView.swift */; };
 		B09F4A9D2F2248AE00411130 /* AppRootRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A882F2248AE00411130 /* AppRootRouter.swift */; };
 		B09F4A9E2F2248AE00411130 /* WeekHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A8D2F2248AE00411130 /* WeekHeaderView.swift */; };
 		B09F4A9F2F2248AE00411130 /* AppRootInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A872F2248AE00411130 /* AppRootInteractor.swift */; };
 		B09F4AA02F2248AE00411130 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A932F2248AE00411130 /* CalendarView.swift */; };
 		B09F4AA12F2248AE00411130 /* CalendarDateGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A902F2248AE00411130 /* CalendarDateGenerator.swift */; };
-		B09F4AA22F2248AE00411130 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A9A2F2248AE00411130 /* HomeViewController.swift */; };
+		B09F4AA22F2248AE00411130 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A9A2F2248AE00411130 /* SettingViewController.swift */; };
 		B09F4AA32F2248AE00411130 /* CalendarRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A922F2248AE00411130 /* CalendarRouter.swift */; };
-		B09F4AA42F2248AE00411130 /* HomeInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A972F2248AE00411130 /* HomeInteractor.swift */; };
+		B09F4AA42F2248AE00411130 /* SettingInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A972F2248AE00411130 /* SettingInteractor.swift */; };
 		B09F4AA52F2248AE00411130 /* AppComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A852F2248AE00411130 /* AppComponent.swift */; };
-		B09F4AA62F2248AE00411130 /* HomeRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A982F2248AE00411130 /* HomeRouter.swift */; };
+		B09F4AA62F2248AE00411130 /* SettingRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A982F2248AE00411130 /* SettingRouter.swift */; };
 		B09F4AA72F2248AE00411130 /* CalendarBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A8F2F2248AE00411130 /* CalendarBuilder.swift */; };
 		B09F4AA82F2248AE00411130 /* CalendarInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A912F2248AE00411130 /* CalendarInteractor.swift */; };
 		B09F4AA92F2248AE00411130 /* DateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A8B2F2248AE00411130 /* DateCell.swift */; };
 		B09F4AAA2F2248AE00411130 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A892F2248AE00411130 /* MainTabBarController.swift */; };
-		B09F4AAB2F2248AE00411130 /* HomeBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A962F2248AE00411130 /* HomeBuilder.swift */; };
+		B09F4AAB2F2248AE00411130 /* SettingBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A962F2248AE00411130 /* SettingBuilder.swift */; };
 		B09F4AAC2F2248AE00411130 /* AppRootBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A862F2248AE00411130 /* AppRootBuilder.swift */; };
 		B09F4AAD2F2248AE00411130 /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A942F2248AE00411130 /* CalendarViewController.swift */; };
 		B27F93AE1831B57DEEC35980 /* Pods_BudgiTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 916183B809334A38AD587663 /* Pods_BudgiTests.framework */; };
@@ -90,11 +90,11 @@
 		B09F4A922F2248AE00411130 /* CalendarRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarRouter.swift; sourceTree = "<group>"; };
 		B09F4A932F2248AE00411130 /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		B09F4A942F2248AE00411130 /* CalendarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarViewController.swift; sourceTree = "<group>"; };
-		B09F4A962F2248AE00411130 /* HomeBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeBuilder.swift; sourceTree = "<group>"; };
-		B09F4A972F2248AE00411130 /* HomeInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeInteractor.swift; sourceTree = "<group>"; };
-		B09F4A982F2248AE00411130 /* HomeRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeRouter.swift; sourceTree = "<group>"; };
-		B09F4A992F2248AE00411130 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
-		B09F4A9A2F2248AE00411130 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		B09F4A962F2248AE00411130 /* SettingBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingBuilder.swift; sourceTree = "<group>"; };
+		B09F4A972F2248AE00411130 /* SettingInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingInteractor.swift; sourceTree = "<group>"; };
+		B09F4A982F2248AE00411130 /* SettingRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingRouter.swift; sourceTree = "<group>"; };
+		B09F4A992F2248AE00411130 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
+		B09F4A9A2F2248AE00411130 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		C6D5A0D70DECCFE55AD40447 /* Pods-BudgiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BudgiTests.release.xcconfig"; path = "Target Support Files/Pods-BudgiTests/Pods-BudgiTests.release.xcconfig"; sourceTree = "<group>"; };
 		CD0F7B421C85116E8109C05A /* Pods-Budgi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Budgi.release.xcconfig"; path = "Target Support Files/Pods-Budgi/Pods-Budgi.release.xcconfig"; sourceTree = "<group>"; };
 		E34C33FEE87FB8F56A01E73B /* Pods-Budgi.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Budgi.debug.xcconfig"; path = "Target Support Files/Pods-Budgi/Pods-Budgi.debug.xcconfig"; sourceTree = "<group>"; };
@@ -217,8 +217,8 @@
 			isa = PBXGroup;
 			children = (
 				B09F4A8A2F2248AE00411130 /* AppRoot */,
-				B09F4A9B2F2248AE00411130 /* Home */,
 				B09F4A952F2248AE00411130 /* Calender */,
+				B09F4A9B2F2248AE00411130 /* Setting */,
 			);
 			path = Pages;
 			sourceTree = "<group>";
@@ -282,8 +282,8 @@
 			isa = PBXGroup;
 			children = (
 				B09F4A8E2F2248AE00411130 /* Subviews */,
-				B09F4A8F2F2248AE00411130 /* CalendarBuilder.swift */,
 				B09F4A902F2248AE00411130 /* CalendarDateGenerator.swift */,
+				B09F4A8F2F2248AE00411130 /* CalendarBuilder.swift */,
 				B09F4A912F2248AE00411130 /* CalendarInteractor.swift */,
 				B09F4A922F2248AE00411130 /* CalendarRouter.swift */,
 				B09F4A932F2248AE00411130 /* CalendarView.swift */,
@@ -292,16 +292,16 @@
 			path = Calender;
 			sourceTree = "<group>";
 		};
-		B09F4A9B2F2248AE00411130 /* Home */ = {
+		B09F4A9B2F2248AE00411130 /* Setting */ = {
 			isa = PBXGroup;
 			children = (
-				B09F4A962F2248AE00411130 /* HomeBuilder.swift */,
-				B09F4A972F2248AE00411130 /* HomeInteractor.swift */,
-				B09F4A982F2248AE00411130 /* HomeRouter.swift */,
-				B09F4A992F2248AE00411130 /* HomeView.swift */,
-				B09F4A9A2F2248AE00411130 /* HomeViewController.swift */,
+				B09F4A962F2248AE00411130 /* SettingBuilder.swift */,
+				B09F4A972F2248AE00411130 /* SettingInteractor.swift */,
+				B09F4A982F2248AE00411130 /* SettingRouter.swift */,
+				B09F4A992F2248AE00411130 /* SettingView.swift */,
+				B09F4A9A2F2248AE00411130 /* SettingViewController.swift */,
 			);
-			path = Home;
+			path = Setting;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -543,22 +543,22 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B09F4A9C2F2248AE00411130 /* HomeView.swift in Sources */,
+				B09F4A9C2F2248AE00411130 /* SettingView.swift in Sources */,
 				B09F4A9D2F2248AE00411130 /* AppRootRouter.swift in Sources */,
 				B09F4A9E2F2248AE00411130 /* WeekHeaderView.swift in Sources */,
 				B09F4A9F2F2248AE00411130 /* AppRootInteractor.swift in Sources */,
 				B09F4AA02F2248AE00411130 /* CalendarView.swift in Sources */,
 				B09F4AA12F2248AE00411130 /* CalendarDateGenerator.swift in Sources */,
-				B09F4AA22F2248AE00411130 /* HomeViewController.swift in Sources */,
+				B09F4AA22F2248AE00411130 /* SettingViewController.swift in Sources */,
 				B09F4AA32F2248AE00411130 /* CalendarRouter.swift in Sources */,
-				B09F4AA42F2248AE00411130 /* HomeInteractor.swift in Sources */,
+				B09F4AA42F2248AE00411130 /* SettingInteractor.swift in Sources */,
 				B09F4AA52F2248AE00411130 /* AppComponent.swift in Sources */,
-				B09F4AA62F2248AE00411130 /* HomeRouter.swift in Sources */,
+				B09F4AA62F2248AE00411130 /* SettingRouter.swift in Sources */,
 				B09F4AA72F2248AE00411130 /* CalendarBuilder.swift in Sources */,
 				B09F4AA82F2248AE00411130 /* CalendarInteractor.swift in Sources */,
 				B09F4AA92F2248AE00411130 /* DateCell.swift in Sources */,
 				B09F4AAA2F2248AE00411130 /* MainTabBarController.swift in Sources */,
-				B09F4AAB2F2248AE00411130 /* HomeBuilder.swift in Sources */,
+				B09F4AAB2F2248AE00411130 /* SettingBuilder.swift in Sources */,
 				B09F4AAC2F2248AE00411130 /* AppRootBuilder.swift in Sources */,
 				B09F4AAD2F2248AE00411130 /* CalendarViewController.swift in Sources */,
 				B09F4A822F2247CE00411130 /* UICollectionView+Extension.swift in Sources */,

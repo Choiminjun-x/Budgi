@@ -1,5 +1,5 @@
 //
-//  HomeView.swift
+//  SettingView.swift
 //  iOS-StudyHub
 //
 //  Created by 최민준(Minjun Choi) on 1/21/26.
@@ -9,17 +9,17 @@ import UIKit
 
 // MARK: ViewEventLogic
 
-protocol HomeViewEventLogic {
+protocol SettingViewEventLogic {
     
 }
 
 // MARK: ViewDisplayLogic
 
-protocol HomeViewDisplayLogic {
+protocol SettingViewDisplayLogic {
     
 }
 
-final class HomeView: UIView, HomeViewEventLogic, HomeViewDisplayLogic {
+final class SettingView: UIView, SettingViewEventLogic, SettingViewDisplayLogic {
     
     // MARK: instantiate
     
@@ -38,8 +38,8 @@ final class HomeView: UIView, HomeViewEventLogic, HomeViewDisplayLogic {
         print(type(of: self), #function)
     }
     
-    static func create() -> HomeView {
-        return HomeView()
+    static func create() -> SettingView {
+        return SettingView()
     }
     
     // MARK: MakeViewLayout

@@ -165,13 +165,14 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
         self.months.append(contentsOf: model.months)
         
         self.calendarCollectionView.collectionViewLayout.invalidateLayout()
-        self.calendarCollectionView.reloadData() {
-            let centerIndex = 2 // 📌 현재월 = 중간 (offset: 0) → section index 2
-            let indexPath = IndexPath(item: 0, section: centerIndex)
-            self.calendarCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
-            
-            self.updateMonthTitle(forPageIndex: centerIndex)
-        }
+        self.calendarCollectionView.reloadData()
+        
+        DispatchQueue.main.async {
+             let centerIndex = 2
+             let indexPath = IndexPath(item: 0, section: centerIndex)
+             self.calendarCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+             self.updateMonthTitle(forPageIndex: centerIndex)
+         }
     }
     
     func displayPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date) {

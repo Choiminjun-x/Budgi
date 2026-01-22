@@ -1,5 +1,5 @@
 //
-//  HomeViewController.swift
+//  SettingViewController.swift
 //  iOS-StudyHub
 //
 //  Created by 최민준(Minjun Choi) on 1/21/26.
@@ -8,7 +8,7 @@
 import UIKit
 import Combine
 
-protocol HomePresentableListener: AnyObject {
+protocol SettingPresentableListener: AnyObject {
     func requestPageInfo()
 
 //    func didTapRefreshButton()
@@ -16,16 +16,16 @@ protocol HomePresentableListener: AnyObject {
 //    func didToggleTodo(id: Int)
 }
 
-final class HomeViewController: UIViewController, HomeViewControllable {
+final class SettingViewController: UIViewController, SettingViewControllable {
     
-    var listener: HomePresentableListener?
+    var listener: SettingPresentableListener?
     
     var viewController: UIViewController { return self }
     
     // MARK: View Event Handling
     
-    private var viewEventLogic: HomeViewEventLogic { self.view as! HomeViewEventLogic }
-    private var viewDisplayLogic: HomeViewDisplayLogic { self.view as! HomeViewDisplayLogic }
+    private var viewEventLogic: SettingViewEventLogic { self.view as! SettingViewEventLogic }
+    private var viewDisplayLogic: SettingViewDisplayLogic { self.view as! SettingViewDisplayLogic }
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -44,7 +44,7 @@ final class HomeViewController: UIViewController, HomeViewControllable {
     // MARK: View lifecycle
     
     override func loadView() {
-        self.view = HomeView.create()
+        self.view = SettingView.create()
     }
     
     override func viewDidLoad() {
@@ -56,6 +56,6 @@ final class HomeViewController: UIViewController, HomeViewControllable {
 
 // MARK: - Presentable
 
-extension HomeViewController: HomePresentable {
+extension SettingViewController: SettingPresentable {
 
 }

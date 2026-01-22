@@ -22,7 +22,6 @@ protocol CalendarPresentable: Presentable {
 }
 
 public protocol CalendarListener: AnyObject {
-    // TODO: Declare methods the interactor can invoke to communicate with other RIBs.
 }
 
 class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarInteractable, CalendarPresentableListener {
