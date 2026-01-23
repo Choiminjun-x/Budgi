@@ -18,7 +18,7 @@ protocol AppRootViewControllable: ViewControllable {
 }
 
 final class AppRootRouter: LaunchRouter<AppRootInteractable, AppRootViewControllable>, AppRootRouting {
-  
+    
     private let calendar: CalendarBuildable
     private let setting: SettingBuildable
     
@@ -33,7 +33,7 @@ final class AppRootRouter: LaunchRouter<AppRootInteractable, AppRootViewControll
     ) {
         self.calendar = calendar
         self.setting = setting
-
+        
         super.init(interactor: interactor, viewController: viewController)
         interactor.router = self
     }
@@ -51,12 +51,36 @@ final class AppRootRouter: LaunchRouter<AppRootInteractable, AppRootViewControll
         let settingNavi = UINavigationController(rootViewController: settingRouting.viewControllable.uiviewController)
         settingNavi.tabBarItem = UITabBarItem(title: "설정", image: UIImage(systemName: "gearshape"), tag: 1)
         
+        // 탭별 네비게이션 바 색상
+        let calendarTapAppearance = makeNavAppearance(bgColor: UIColor.systemGreen.withAlphaComponent(0.4))
+        calendarNavi.navigationBar.standardAppearance = calendarTapAppearance
+        calendarNavi.navigationBar.scrollEdgeAppearance = calendarTapAppearance
+        calendarNavi.navigationBar.compactAppearance = calendarTapAppearance
+        calendarNavi.navigationBar.tintColor = .white
         
+        let settingTapAppearance = makeNavAppearance(bgColor: .white)
+        settingNavi.navigationBar.standardAppearance = settingTapAppearance
+        settingNavi.navigationBar.scrollEdgeAppearance = settingTapAppearance
+        settingNavi.navigationBar.compactAppearance = settingTapAppearance
+        settingNavi.navigationBar.tintColor = .white
+
         let viewControllers = [
             calendarNavi,
             settingNavi
         ]
         
         viewController.setViewControllers(viewControllers)
+    }
+    
+    private func makeNavAppearance(bgColor: UIColor) -> UINavigationBarAppearance {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = bgColor
+        appearance.shadowColor = .separator
+        appearance.titleTextAttributes = [
+            .foregroundColor: UIColor.label,
+            .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
+        ]
+        return appearance
     }
 }

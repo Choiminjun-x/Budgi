@@ -31,6 +31,16 @@ final class SettingViewController: UIViewController, SettingViewControllable {
     
     // MARK: instantiate
     
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        self.setupNavigation()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        return nil
+    }
+    
+    
     deinit {
         print(type(of: self), #function)
     }
@@ -38,7 +48,7 @@ final class SettingViewController: UIViewController, SettingViewControllable {
     // MARK: Setup Navigation
     
     private func setupNavigation() {
-        
+        self.navigationItem.title = "환경 설정"
     }
     
     // MARK: View lifecycle

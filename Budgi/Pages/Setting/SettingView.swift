@@ -45,7 +45,7 @@ final class SettingView: UIView, SettingViewEventLogic, SettingViewDisplayLogic 
     // MARK: MakeViewLayout
     
     private func makeViewLayout() {
-        self.backgroundColor = .brown
+        self.backgroundColor = .white
     }
     
     

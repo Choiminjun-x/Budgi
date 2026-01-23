@@ -26,21 +26,21 @@ class MainTabBarController: UITabBarController, AppRootViewControllable, AppRoot
     
     private func makeViewLayout() {
         // UINavigationBar
-        let appearance = UINavigationBarAppearance().do {
-            $0.configureWithOpaqueBackground()  // 배경을 불투명하게
-            $0.backgroundColor = .green.withAlphaComponent(0.2)          // 원하는 색상
-            $0.shadowColor = .separator          // 하단 라인 (원하는 경우)
-
-            // Title 스타일
-            $0.titleTextAttributes = [
-                .foregroundColor: UIColor.label,
-                .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
-            ]
-        }
-        UINavigationBar.appearance().standardAppearance = appearance
-        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-        UINavigationBar.appearance().compactAppearance = appearance
-        UINavigationBar.appearance().tintColor = .systemBlue // 버튼 색상
+//        let appearance = UINavigationBarAppearance().do {
+//            $0.configureWithOpaqueBackground()  // 배경을 불투명하게
+//            $0.backgroundColor = .green.withAlphaComponent(0.2)          // 원하는 색상
+//            $0.shadowColor = .separator          // 하단 라인 (원하는 경우)
+//
+//            // Title 스타일
+//            $0.titleTextAttributes = [
+//                .foregroundColor: UIColor.label,
+//                .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
+//            ]
+//        }
+//        UINavigationBar.appearance().standardAppearance = appearance
+//        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+//        UINavigationBar.appearance().compactAppearance = appearance
+//        UINavigationBar.appearance().tintColor = .systemBlue // 버튼 색상
         
         // UITabBar
         UIView().do {
@@ -62,20 +62,4 @@ class MainTabBarController: UITabBarController, AppRootViewControllable, AppRoot
     func setViewControllers(_ viewControllers: [UIViewController]) {
         super.setViewControllers(viewControllers, animated: false)
     }
-    
-//    private func setupTabs() {
-//        let homeVC = HomeViewController()
-////        let homeVC2 = CalendarViewController()
-//        let homeVC3 = HomeViewController()
-//        
-//        let homeNav = UINavigationController(rootViewController: homeVC)
-////        let calendarNav = UINavigationController(rootViewController: homeVC2)
-//        let settingsNav = UINavigationController(rootViewController: homeVC3)
-//        
-//        homeNav.tabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), tag: 0)
-//        calendarNav.tabBarItem = UITabBarItem(title: "캘린더", image: UIImage(systemName: "calendar"), tag: 1)
-//        settingsNav.tabBarItem = UITabBarItem(title: "설정", image: UIImage(systemName: "gearshape"), tag: 2)
-//        
-//        viewControllers = [homeNav, calendarNav, settingsNav]
-//    }
 }
