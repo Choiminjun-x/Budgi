@@ -39,8 +39,13 @@ enum CalendarViewModel {
 
 final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLogic {
     
-    private var calendarCollectionView: UICollectionView!
     private let weekHeader = WeekHeaderView()
+    private var calendarCollectionView: UICollectionView!
+    private var summaryScrollView: UIScrollView!
+    private var summaryContainerView: UIView!
+    private var summaryDayLabel: UILabel!
+    
+    private var plusButton: UIButton!
     
     private var months: [[CalendarDay]] = []
     private var monthBases: [Date] = [] // 각 섹션에 해당하는 월의 첫날들
@@ -104,7 +109,65 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             self.addSubview($0)
             $0.snp.makeConstraints {
                 $0.top.equalTo(self.weekHeader.snp.bottom).offset(4)
-                $0.leading.trailing.bottom.equalToSuperview()
+                $0.leading.trailing.equalToSuperview()
+                // 6행 기준: 높이 = (width * 6/7)
+                $0.height.equalTo(self.snp.width).multipliedBy(6.0/7.0)
+            }
+        }
+        
+        self.summaryScrollView = UIScrollView().do { scrollView in
+            self.addSubview(scrollView)
+            scrollView.snp.makeConstraints {
+                $0.top.equalTo(self.calendarCollectionView.snp.bottom)
+                $0.bottom.equalTo(self.safeAreaLayoutGuide.snp.bottom)
+                $0.leading.trailing.equalToSuperview()
+            }
+
+            self.summaryContainerView = UIView().do { container in
+                scrollView.addSubview(container)
+                container.snp.makeConstraints {
+                    $0.edges.equalToSuperview()
+                    $0.width.equalToSuperview()
+                    $0.height.equalToSuperview().priority(.low)
+                }
+                
+                self.summaryDayLabel = UILabel().do {
+                    $0.textColor = .gray
+                    $0.numberOfLines = 1
+                    $0.font = .systemFont(ofSize: 15, weight: .bold)
+                    $0.setContentHuggingPriority(.required, for: .vertical)
+                    $0.setContentCompressionResistancePriority(.required, for: .vertical)
+                    
+                    container.addSubview($0)
+                    $0.snp.makeConstraints {
+                        $0.top.equalToSuperview()
+                        $0.leading.trailing.equalToSuperview().inset(16)
+                    }
+                }
+                
+                UIStackView().do { mainStack in
+                    mainStack.axis = .vertical
+                    
+                    container.addSubview(mainStack)
+                    mainStack.snp.makeConstraints {
+                        $0.top.equalTo(self.summaryDayLabel.snp.bottom)
+                        $0.leading.trailing.bottom.equalToSuperview()
+                    }
+                }
+            }
+        }
+        
+        self.plusButton = UIButton().do {
+            $0.setImage(UIImage(systemName: "plus"), for: .normal)
+            $0.tintColor = .white
+            $0.backgroundColor = .systemBlue
+            $0.layer.cornerRadius = 28 // 원형 (56x56 크기 기준)
+            
+            self.addSubview($0)
+            $0.snp.makeConstraints {
+                $0.trailing.equalToSuperview().inset(20)
+                $0.bottom.equalTo(self.safeAreaLayoutGuide).inset(30) // 탭바 위 30
+                $0.height.width.equalTo(56)
             }
         }
     }
@@ -179,17 +242,32 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
         self.months.insert(newDays, at: 0)
         self.monthBases.insert(newMonth, at: 0)
         
-        self.calendarCollectionView.performBatchUpdates {
-            self.calendarCollectionView.insertSections(IndexSet(integer: 0))
-        } completion: { _ in
-            // 📌 삽입으로 인해 기존 페이지가 section + 1로 밀렸으므로 → +1 위치로 이동
-            DispatchQueue.main.async {
-                let correctedIndexPath = IndexPath(item: 0, section: self.currentPage + 1)
-                self.calendarCollectionView.scrollToItem(at: correctedIndexPath, at: .centeredHorizontally, animated: false)
-            }
+        let pageWidth = self.calendarCollectionView.bounds.width
+        guard pageWidth > 0 else { return }
+        
+        let previousOffset = self.calendarCollectionView.contentOffset
+        self.calendarCollectionView.isUserInteractionEnabled = false
+        
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        UIView.performWithoutAnimation {
+            self.calendarCollectionView.performBatchUpdates({
+                self.calendarCollectionView.insertSections(IndexSet(integer: 0))
+            }, completion: { _ in
+                // 레이아웃 확정 후 오프셋 보정 -> scrollToItem은 점프감 때문에 offest 조정
+                self.calendarCollectionView.layoutIfNeeded()
+                let newOffset = CGPoint(x: previousOffset.x + pageWidth, y: previousOffset.y)
+                self.calendarCollectionView.setContentOffset(newOffset, animated: false)
+                
+                self.currentPage += 1
+                self.updateMonthTitle(forPageIndex: self.currentPage)
+                
+                self.calendarCollectionView.isUserInteractionEnabled = true
+                CATransaction.commit()
+            })
         }
     }
-    
+
     func displayNextMonthInfo(newDays: [CalendarDay], newMonth: Date) {
         let insertIndex = self.months.count
         self.months.append(newDays)
@@ -213,6 +291,13 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
         let monthText = formatter.string(from: currentDate)
         self.displayNaviTitle.send(monthText)
     }
+    
+    func updateSummaryDayTitle(currentDate: Date) {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy년 MM월 dd일"
+        self.summaryDayLabel.text = formatter.string(from: currentDate)
+    }
 }
 
 extension CalendarView: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -233,6 +318,12 @@ extension CalendarView: UICollectionViewDelegate, UICollectionViewDataSource {
         let isSelected = (indexPath == self.selectedIndexPath)
         cell.displaySelectedStyle(isSelected)
         
+        // 일 지출 내역 요약 날짜 세팅
+        if self.months[indexPath.section][indexPath.item].isToday {
+            let currentDate = self.months[indexPath.section][indexPath.item].date
+            self.updateSummaryDayTitle(currentDate: currentDate)
+        }
+        
         return cell
     }
     
@@ -249,6 +340,10 @@ extension CalendarView: UICollectionViewDelegate, UICollectionViewDataSource {
         // 현재 선택 셀 표시
         if let currentCell = collectionView.cellForItem(at: indexPath) as? DateCell {
             currentCell.displaySelectedStyle(true)
+        
+            // 일 지출 내역 요약 날짜 세팅
+            let currentDate = self.months[indexPath.section][indexPath.item].date
+            self.updateSummaryDayTitle(currentDate: currentDate)
         }
         
         // 새로운 선택 위치 저장

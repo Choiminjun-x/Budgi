@@ -11,7 +11,12 @@ import SnapKit
 class DateCell: UICollectionViewCell {
     
     private var dayLabel: UILabel!
-    private var todayCircleView: UIView!
+    
+    private var transactionList: UIStackView!
+    
+    
+    private var desc1: UILabel!
+    private var desc2: UILabel!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,34 +29,53 @@ class DateCell: UICollectionViewCell {
     }
     
     private func makeViewLayout() {
-        self.todayCircleView = UIView().do {
-            $0.layer.cornerRadius = 16
-            $0.backgroundColor = .systemBlue
-            $0.isHidden = true
-            
-            contentView.addSubview($0)
-            $0.snp.makeConstraints {
-                $0.center.equalToSuperview()
-                $0.width.height.equalTo(32)
-            }
-        }
-        
         self.dayLabel = UILabel().do {
             $0.textAlignment = .center
             
             contentView.addSubview($0)
             $0.snp.makeConstraints {
-                $0.edges.equalToSuperview()
+                $0.top.equalToSuperview()
+                $0.centerX.equalToSuperview()
+            }
+        }
+        
+        self.transactionList = UIStackView().do { mainStack in
+            mainStack.axis = .vertical
+            
+            contentView.addSubview(mainStack)
+            mainStack.snp.makeConstraints {
+                $0.top.equalTo(self.dayLabel.snp.bottom).inset(2)
+                $0.leading.trailing.equalToSuperview().inset(2)
+                $0.bottom.equalToSuperview().inset(2)
+            }
+            
+            UILabel().do {
+                $0.text = "45,000"
+                $0.textColor = .red
+                $0.textAlignment = .center
+                $0.font = .systemFont(ofSize: 12, weight: .regular)
+                $0.setContentCompressionResistancePriority(.required, for: .vertical)
+                
+                mainStack.addArrangedSubview($0)
+            }
+            
+            UILabel().do {
+                $0.text = "45,000"
+                $0.textColor = .blue
+                $0.textAlignment = .center
+                $0.font = .systemFont(ofSize: 12, weight: .regular)
+                $0.setContentCompressionResistancePriority(.required, for: .vertical)
+                
+                mainStack.addArrangedSubview($0)
             }
         }
     }
     
     func displayCellInfo(with day: CalendarDay) {
-        self.todayCircleView.isHidden = !day.isToday
-        
         let dayNumber = Calendar.current.component(.day, from: day.date)
         self.dayLabel.text = "\(dayNumber)"
-        self.dayLabel.textColor = day.isToday ? .white : day.isInCurrentMonth ? .label : .lightGray
+        self.dayLabel.font = .systemFont(ofSize: 14, weight: day.isToday ? .bold : .regular)
+        self.dayLabel.textColor = day.isToday ? .red : day.isInCurrentMonth ? .label : .lightGray
     }
     
     func displaySelectedStyle(_ isSelected: Bool) {
