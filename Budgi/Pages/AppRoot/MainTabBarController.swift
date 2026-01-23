@@ -25,23 +25,6 @@ class MainTabBarController: UITabBarController, AppRootViewControllable, AppRoot
     // MARK: MakeViewLayout
     
     private func makeViewLayout() {
-        // UINavigationBar
-//        let appearance = UINavigationBarAppearance().do {
-//            $0.configureWithOpaqueBackground()  // 배경을 불투명하게
-//            $0.backgroundColor = .green.withAlphaComponent(0.2)          // 원하는 색상
-//            $0.shadowColor = .separator          // 하단 라인 (원하는 경우)
-//
-//            // Title 스타일
-//            $0.titleTextAttributes = [
-//                .foregroundColor: UIColor.label,
-//                .font: UIFont.systemFont(ofSize: 17, weight: .semibold)
-//            ]
-//        }
-//        UINavigationBar.appearance().standardAppearance = appearance
-//        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-//        UINavigationBar.appearance().compactAppearance = appearance
-//        UINavigationBar.appearance().tintColor = .systemBlue // 버튼 색상
-        
         // UITabBar
         UIView().do {
             $0.backgroundColor = .separator
