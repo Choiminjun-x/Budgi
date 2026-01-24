@@ -9,6 +9,8 @@ import Foundation
 import RIBs
 
 protocol CalendarRouting: ViewableRouting {
+    func attachTransactionInput(selectedDate: Date)
+    func detachTransactionInput()
     //    func attachTodoListDetail()
     //    func detachTodoListDetail()
 }
@@ -24,7 +26,7 @@ protocol CalendarPresentable: Presentable {
 public protocol CalendarListener: AnyObject {
 }
 
-class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarInteractable, CalendarPresentableListener {
+class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarInteractable, CalendarPresentableListener, TransactionInputListener {
     
     var router: CalendarRouting?
     var listener: CalendarListener?
@@ -58,6 +60,14 @@ class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarIn
         let newDays = self.dateGenerator.generateMonthDays(for: newMonth)
         self.presenter.presentNextMonthInfo(newDays: newDays,
                                             newMonth: newMonth)
+    }
+
+    func didTapPlusButton(selectedDate: Date) {
+        self.router?.attachTransactionInput(selectedDate: selectedDate)
+    }
+
+    func transactionInputDidClose() {
+        self.router?.detachTransactionInput()
     }
     
     private func loadMonths(around centerDate: Date, range: Int = 2) -> CalendarViewModel.PageInfo {

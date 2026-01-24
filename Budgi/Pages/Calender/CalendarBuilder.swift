@@ -12,7 +12,7 @@ protocol CalendarDependency: Dependency {
     var dateGenerator: DateGenerator { get }
 }
 
-final class CalendarComponent: Component<CalendarDependency> {
+final class CalendarComponent: Component<CalendarDependency>, TransactionInputDependency {
     var dateGenerator: DateGenerator { dependency.dateGenerator }
 }
 
@@ -31,8 +31,10 @@ class CalendarBuilder: Builder<CalendarDependency>, CalendarBuildable {
         let viewController = CalendarViewController()
         let interactor = CalendarInteractor(presenter: viewController, dateGenerator: dependency.dateGenerator)
         interactor.listener = listener
-        
+
+        let transactionInputBuilder = TransactionInputBuilder(dependency: component)
         return CalendarRouter(interactor: interactor,
-                              viewController: viewController)
+                              viewController: viewController,
+                              transactionInputBuilder: transactionInputBuilder)
     }
 }

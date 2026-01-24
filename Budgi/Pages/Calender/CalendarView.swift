@@ -16,6 +16,7 @@ protocol CalendarViewEventLogic where Self: NSObject {
     var requestPreviousMonthInfo: PassthroughSubject<Date, Never> { get }
     var requestNextMonthInfo: PassthroughSubject<Date, Never> { get }
     
+    var didTapPlusButton: PassthroughSubject<Date, Never> { get }
 }
 
 // MARK: - DisplayLogic
@@ -58,7 +59,11 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     var requestPreviousMonthInfo: PassthroughSubject<Date, Never> = .init()
     var requestNextMonthInfo: PassthroughSubject<Date, Never> = .init()
     
+    var didTapPlusButton: PassthroughSubject<Date, Never> = .init()
+    
     var displayNaviTitle: PassthroughSubject<String, Never> = .init()
+    
+    private var cancellables = Set<AnyCancellable>()
     
     
     // MARK: instantiate
@@ -217,7 +222,11 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     // MARK: makeViewEvents
     
     private func makeEvents() {
-        
+        self.plusButton.do {
+            $0.tapPublisher.sink {
+                self.didTapPlusButton.send(self.resolveSelectedDate())
+            }.store(in: &cancellables)
+        }
     }
     
     
@@ -297,6 +306,15 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "yyyy년 MM월 dd일"
         self.summaryDayLabel.text = formatter.string(from: currentDate)
+    }
+
+    private func resolveSelectedDate() -> Date {
+        if let selectedIndexPath = self.selectedIndexPath,
+           self.months.indices.contains(selectedIndexPath.section),
+           self.months[selectedIndexPath.section].indices.contains(selectedIndexPath.item) {
+            return self.months[selectedIndexPath.section][selectedIndexPath.item].date
+        }
+        return Date()
     }
 }
 

@@ -22,12 +22,14 @@ final class SettingViewController: UIViewController, SettingViewControllable {
     
     var viewController: UIViewController { return self }
     
+    
     // MARK: View Event Handling
     
     private var viewEventLogic: SettingViewEventLogic { self.view as! SettingViewEventLogic }
     private var viewDisplayLogic: SettingViewDisplayLogic { self.view as! SettingViewDisplayLogic }
     
     private var cancellables = Set<AnyCancellable>()
+    
     
     // MARK: instantiate
     
@@ -45,11 +47,13 @@ final class SettingViewController: UIViewController, SettingViewControllable {
         print(type(of: self), #function)
     }
     
+    
     // MARK: Setup Navigation
     
     private func setupNavigation() {
         self.navigationItem.title = "환경 설정"
     }
+    
     
     // MARK: View lifecycle
     
@@ -59,7 +63,6 @@ final class SettingViewController: UIViewController, SettingViewControllable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
 }
 

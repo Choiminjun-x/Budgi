@@ -12,6 +12,7 @@ protocol CalendarPresentableListener: AnyObject {
     func requestPageInfo()
     func requestPreviousMonthInfo(_ newMonth: Date)
     func requestNewMonthInfo(_ newMonth: Date)
+    func didTapPlusButton(selectedDate: Date)
 
 //    func didTapRefreshButton()
 //    func didTapTodoItem(todo: Todo?)
@@ -66,12 +67,16 @@ final class CalendarViewController: UIViewController, CalendarViewControllable {
         super.viewDidLoad()
         
         self.viewEventLogic.do {
-            $0.requestPreviousMonthInfo.sink { newMonth in
-                self.listener?.requestPreviousMonthInfo(newMonth)
+            $0.requestPreviousMonthInfo.sink { [weak self] newMonth in
+                self?.listener?.requestPreviousMonthInfo(newMonth)
             }.store(in: &cancellables)
             
-            $0.requestNextMonthInfo.sink { newMonth in
-                self.listener?.requestNewMonthInfo(newMonth)
+            $0.requestNextMonthInfo.sink { [weak self]  newMonth in
+                self?.listener?.requestNewMonthInfo(newMonth)
+            }.store(in: &cancellables)
+            
+            $0.didTapPlusButton.sink { [weak self] selectedDate in
+                self?.listener?.didTapPlusButton(selectedDate: selectedDate)
             }.store(in: &cancellables)
         }
         
