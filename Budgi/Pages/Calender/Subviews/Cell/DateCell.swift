@@ -13,8 +13,6 @@ class DateCell: UICollectionViewCell {
     private var dayLabel: UILabel!
     
     private var transactionList: UIStackView!
-    
-    
     private var desc1: UILabel!
     private var desc2: UILabel!
     
@@ -75,7 +73,22 @@ class DateCell: UICollectionViewCell {
         let dayNumber = Calendar.current.component(.day, from: day.date)
         self.dayLabel.text = "\(dayNumber)"
         self.dayLabel.font = .systemFont(ofSize: 14, weight: day.isToday ? .bold : .regular)
-        self.dayLabel.textColor = day.isToday ? .red : day.isInCurrentMonth ? .label : .lightGray
+        
+        let weekday = Calendar.current.component(.weekday, from: day.date)
+        if day.isToday {
+            self.dayLabel.textColor = .red
+        } else {
+            if !day.isInCurrentMonth {
+                self.dayLabel.textColor = .lightGray
+            } else if weekday == 1 {
+                self.dayLabel.textColor = .red
+            } else if weekday == 7 {
+                self.dayLabel.textColor = .blue
+            } else {
+                self.dayLabel.textColor = .label
+            }
+        }
+      
     }
     
     func displaySelectedStyle(_ isSelected: Bool) {
