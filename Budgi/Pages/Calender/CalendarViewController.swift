@@ -97,13 +97,19 @@ extension CalendarViewController: CalendarPresentable {
         self.viewDisplayLogic.displayPageInfo(pageInfo)
     }
     
-    func presentPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date) {
+    func presentPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [Int64]]) {
         self.viewDisplayLogic.displayPreviousMonthInfo(newDays: newDays,
-                                                       newMonth: newMonth)
+                                                       newMonth: newMonth,
+                                                       transactionsByDay: transactionsByDay)
     }
     
-    func presentNextMonthInfo(newDays: [CalendarDay], newMonth: Date) {
+    func presentNextMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [Int64]]) {
         self.viewDisplayLogic.displayNextMonthInfo(newDays: newDays,
-                                                   newMonth: newMonth)
+                                                   newMonth: newMonth,
+                                                   transactionsByDay: transactionsByDay)
+    }
+
+    func presentUpdatedTransactions(transactionsByDay: [Date: [Int64]]) {
+        self.viewDisplayLogic.displayUpdatedTransactions(transactionsByDay)
     }
 }

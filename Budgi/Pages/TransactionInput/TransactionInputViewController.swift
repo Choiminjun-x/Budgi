@@ -10,6 +10,8 @@ import Combine
 
 protocol TransactionInputPresentableListener: AnyObject {
     func requestPageInfo()
+    
+    func didTapSaveButton(amount: Int64)
     func didTapClose()
 
 //    func didTapRefreshButton()
@@ -74,11 +76,11 @@ final class TransactionInputViewController: UIViewController, TransactionInputVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        self.viewDisplayLogic.focusAmountInput()
+        self.viewEventLogic.do {
+            $0.saveButtonDidTap.sink { [weak self] amount in
+                self?.listener?.didTapSaveButton(amount: amount)
+            }.store(in: &cancellables)
+        }
     }
 }
 
@@ -87,7 +89,7 @@ final class TransactionInputViewController: UIViewController, TransactionInputVi
 
 extension TransactionInputViewController: TransactionInputPresentable {
 
-    func displaySelectedDate(_ date: Date) {
+    func presentPageInfo(_ date: Date) {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "yyyy/MM/dd"

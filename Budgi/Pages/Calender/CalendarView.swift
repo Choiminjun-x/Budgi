@@ -23,8 +23,9 @@ protocol CalendarViewEventLogic where Self: NSObject {
 
 protocol CalendarViewDisplayLogic where Self: NSObject {
     func displayPageInfo(_ model: CalendarViewModel.PageInfo)
-    func displayPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date )
-    func displayNextMonthInfo(newDays: [CalendarDay], newMonth: Date)
+    func displayPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [Int64]])
+    func displayNextMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [Int64]])
+    func displayUpdatedTransactions(_ transactionsByDay: [Date: [Int64]])
     
     var displayNaviTitle: PassthroughSubject<String, Never> { get }
 }
@@ -35,6 +36,7 @@ enum CalendarViewModel {
     struct PageInfo {
         var months: [[CalendarDay]]
         var monthBases: [Date]
+        var transactionsByDay: [Date: [Int64]]
     }
 }
 
@@ -50,11 +52,17 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     
     private var months: [[CalendarDay]] = []
     private var monthBases: [Date] = [] // 각 섹션에 해당하는 월의 첫날들
+    private var transactionsByDay: [Date: [Int64]] = [:]
     
     var centerSectionIndex: Int = 500
     
     var currentPage: Int = 2
     var selectedIndexPath: IndexPath?
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    
+    // MARK: EventLogic
     
     var requestPreviousMonthInfo: PassthroughSubject<Date, Never> = .init()
     var requestNextMonthInfo: PassthroughSubject<Date, Never> = .init()
@@ -62,9 +70,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     var didTapPlusButton: PassthroughSubject<Date, Never> = .init()
     
     var displayNaviTitle: PassthroughSubject<String, Never> = .init()
-    
-    private var cancellables = Set<AnyCancellable>()
-    
+
     
     // MARK: instantiate
     
@@ -235,6 +241,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     func displayPageInfo(_ model: CalendarViewModel.PageInfo) {
         self.monthBases.append(contentsOf: model.monthBases)
         self.months.append(contentsOf: model.months)
+        self.transactionsByDay = model.transactionsByDay
         
         self.calendarCollectionView.collectionViewLayout.invalidateLayout()
         self.calendarCollectionView.reloadData()
@@ -247,9 +254,12 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
          }
     }
     
-    func displayPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date) {
+    func displayPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [Int64]]) {
         self.months.insert(newDays, at: 0)
         self.monthBases.insert(newMonth, at: 0)
+        self.transactionsByDay.merge(transactionsByDay) { current, new in
+            current + new
+        }
         
         let pageWidth = self.calendarCollectionView.bounds.width
         guard pageWidth > 0 else { return }
@@ -277,14 +287,24 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
         }
     }
 
-    func displayNextMonthInfo(newDays: [CalendarDay], newMonth: Date) {
+    func displayNextMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [Int64]]) {
         let insertIndex = self.months.count
         self.months.append(newDays)
         self.monthBases.append(newMonth)
+        self.transactionsByDay.merge(transactionsByDay) { current, new in
+            current + new
+        }
         
         self.calendarCollectionView.performBatchUpdates {
             self.calendarCollectionView.insertSections(IndexSet(integer: insertIndex))
         }
+    }
+
+    func displayUpdatedTransactions(_ transactionsByDay: [Date: [Int64]]) {
+        self.transactionsByDay.merge(transactionsByDay) { _, new in
+            new
+        }
+        self.calendarCollectionView.reloadData()
     }
     
     func updateMonthTitle(forPageIndex pageIndex: Int) {
@@ -330,7 +350,13 @@ extension CalendarView: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DateCell", for: indexPath) as! DateCell
-        cell.displayCellInfo(with: self.months[indexPath.section][indexPath.item])
+        let day = self.months[indexPath.section][indexPath.item]
+        let dateKey = Calendar.current.startOfDay(for: day.date)
+        let amounts = self.transactionsByDay[dateKey] ?? []
+        cell.displayCellInfo(cellModel: .init(
+            day: day,
+            amounts: amounts)
+        )
         
         // 셀 선택 상태 반영
         let isSelected = (indexPath == self.selectedIndexPath)

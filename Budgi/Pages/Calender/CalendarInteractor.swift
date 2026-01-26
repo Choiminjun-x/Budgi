@@ -19,14 +19,15 @@ protocol CalendarPresentable: Presentable {
     var listener: CalendarPresentableListener? { get set }
     
     func presentPageInfo(pageInfo: CalendarViewModel.PageInfo)
-    func presentPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date)
-    func presentNextMonthInfo(newDays: [CalendarDay], newMonth: Date)
+    func presentPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [Int64]])
+    func presentNextMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [Int64]])
+    func presentUpdatedTransactions(transactionsByDay: [Date: [Int64]])
 }
 
 public protocol CalendarListener: AnyObject {
 }
 
-class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarInteractable, CalendarPresentableListener, TransactionInputListener {
+class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarInteractable, CalendarPresentableListener {
     
     var router: CalendarRouting?
     var listener: CalendarListener?
@@ -47,28 +48,33 @@ class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarIn
     
     func requestPageInfo() {
         let pageInfo = self.loadMonths(around: Date())
-        self.presenter.presentPageInfo(pageInfo: pageInfo)
+        let transactionsByDay = self.makeTransactionsByDay(for: pageInfo.monthBases)
+        var updatedPageInfo = pageInfo
+        updatedPageInfo.transactionsByDay = transactionsByDay
+        self.presenter.presentPageInfo(pageInfo: updatedPageInfo)
     }
     
     func requestPreviousMonthInfo(_ newMonth: Date) {
         let newDays = self.dateGenerator.generateMonthDays(for: newMonth)
+        let transactionsByDay = self.makeTransactionsByDay(for: [newMonth])
         self.presenter.presentPreviousMonthInfo(newDays: newDays,
-                                                newMonth: newMonth)
+                                                newMonth: newMonth,
+                                                transactionsByDay: transactionsByDay)
     }
     
     func requestNewMonthInfo(_ newMonth: Date) {
         let newDays = self.dateGenerator.generateMonthDays(for: newMonth)
+        let transactionsByDay = self.makeTransactionsByDay(for: [newMonth])
         self.presenter.presentNextMonthInfo(newDays: newDays,
-                                            newMonth: newMonth)
+                                            newMonth: newMonth,
+                                            transactionsByDay: transactionsByDay)
     }
 
     func didTapPlusButton(selectedDate: Date) {
         self.router?.attachTransactionInput(selectedDate: selectedDate)
     }
 
-    func transactionInputDidClose() {
-        self.router?.detachTransactionInput()
-    }
+   
     
     private func loadMonths(around centerDate: Date, range: Int = 2) -> CalendarViewModel.PageInfo {
         var months = [[CalendarDay]]()
@@ -83,6 +89,38 @@ class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarIn
         }
         
         return .init(months: months,
-                     monthBases: monthBases)
+                     monthBases: monthBases,
+                     transactionsByDay: [:])
+    }
+}
+
+
+// MARK: TransactionInputListener
+
+extension CalendarInteractor: TransactionInputListener {
+    
+    func transactionInputDidClose() {
+        self.router?.detachTransactionInput()
+    }
+
+    func transactionInputDidSave(savedDate: Date) {
+        let transactionsByDay = self.makeTransactionsByDay(for: [savedDate])
+        self.presenter.presentUpdatedTransactions(transactionsByDay: transactionsByDay)
+    }
+    
+    private func makeTransactionsByDay(for months: [Date]) -> [Date: [Int64]] {
+        var result: [Date: [Int64]] = [:]
+        let calendar = Calendar.current
+        
+        for month in months {
+            let transactions = CoreDataManager.shared.fetchTransactions(for: month)
+            for transaction in transactions {
+                guard let date = transaction.date else { continue }
+                let dayKey = calendar.startOfDay(for: date)
+                result[dayKey, default: []].append(transaction.amount)
+            }
+        }
+        
+        return result
     }
 }
