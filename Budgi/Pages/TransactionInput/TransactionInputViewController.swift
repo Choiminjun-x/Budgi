@@ -11,12 +11,8 @@ import Combine
 protocol TransactionInputPresentableListener: AnyObject {
     func requestPageInfo()
     
-    func didTapSaveButton(amount: Int64)
+    func didTapSaveButton(amount: Int64, categoryId: String?)
     func didTapClose()
-
-//    func didTapRefreshButton()
-//    func didTapTodoItem(todo: Todo?)
-//    func didToggleTodo(id: Int)
 }
 
 final class TransactionInputViewController: UIViewController, TransactionInputViewControllable {
@@ -77,8 +73,8 @@ final class TransactionInputViewController: UIViewController, TransactionInputVi
         super.viewDidLoad()
         
         self.viewEventLogic.do {
-            $0.saveButtonDidTap.sink { [weak self] amount in
-                self?.listener?.didTapSaveButton(amount: amount)
+            $0.saveButtonDidTap.sink { [weak self] (amount, categoryId) in
+                self?.listener?.didTapSaveButton(amount: amount, categoryId: categoryId)
             }.store(in: &cancellables)
         }
     }

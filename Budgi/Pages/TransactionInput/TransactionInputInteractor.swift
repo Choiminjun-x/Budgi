@@ -17,9 +17,6 @@ protocol TransactionInputPresentable: Presentable {
     var listener: TransactionInputPresentableListener? { get set }
     
     func presentPageInfo(_ date: Date)
-//    func presentPageInfo(pageInfo: CalendarViewModel.PageInfo)
-//    func presentPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date)
-//    func presentNextMonthInfo(newDays: [CalendarDay], newMonth: Date)
 }
 
 public protocol TransactionInputListener: AnyObject {
@@ -50,13 +47,13 @@ class TransactionInputInteractor: PresentableInteractor<TransactionInputPresenta
     }
 
     // 저장 버튼
-    func didTapSaveButton(amount: Int64) {
+    func didTapSaveButton(amount: Int64, categoryId: String?) {
         /// 1. 생성 - context에 자동 등록
         let transaction = Transaction(context: CoreDataManager.shared.context)
         /// 2. 수정 - context 내부 객체 상태 변경
         transaction.id = UUID()
         transaction.amount = amount
-        transaction.category = "테스트"
+        transaction.category = (categoryId?.isEmpty == false ? categoryId : nil) ?? "uncat"
         transaction.date = self.selectedDate
         transaction.memo = "memo"
         
