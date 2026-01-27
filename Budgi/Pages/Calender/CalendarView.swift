@@ -12,6 +12,7 @@ import SnapKit
 // MARK: - Models
 
 struct DayTransaction: Equatable {
+    let id: UUID
     let amount: Int64
     let categoryId: String?
 }
@@ -24,6 +25,7 @@ protocol CalendarViewEventLogic where Self: NSObject {
     var requestNextMonthInfo: PassthroughSubject<Date, Never> { get }
     
     var didTapPlusButton: PassthroughSubject<Date, Never> { get }
+    var didTapDeleteTransaction: PassthroughSubject<(UUID, Date), Never> { get }
 }
 
 // MARK: - DisplayLogic
@@ -51,7 +53,6 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     
     private let weekHeader = WeekHeaderView()
     private var calendarCollectionView: UICollectionView!
-    private var calendarHeightConstraint: Constraint?
     
     private var separateLine: UIView!
     
@@ -81,6 +82,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     var requestNextMonthInfo: PassthroughSubject<Date, Never> = .init()
     
     var didTapPlusButton: PassthroughSubject<Date, Never> = .init()
+    var didTapDeleteTransaction: PassthroughSubject<(UUID, Date), Never> = .init()
     
     var displayNaviTitle: PassthroughSubject<String, Never> = .init()
 
@@ -213,7 +215,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     private func makeCalendarLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, environment in
             let containerWidth = environment.container.effectiveContentSize.width
-            let itemLength = floor(containerWidth / 7)
+            let itemLength = floor(containerWidth / 7) // 55
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0 / 7.0),
                 heightDimension: .fractionalHeight(1.0)
@@ -497,6 +499,11 @@ extension CalendarView {
             row.configure(category: name,
                           amountText: (item.amount < 0 ? "-" : "+") + text,
                           tint: signColor)
+            // 내역 삭제
+            row.onTapDelete = { [weak self] in
+                guard let self else { return }
+                self.didTapDeleteTransaction.send((item.id, date))
+            }
             self.summaryList.addArrangedSubview(row)
         }
         

@@ -13,10 +13,7 @@ protocol CalendarPresentableListener: AnyObject {
     func requestPreviousMonthInfo(_ newMonth: Date)
     func requestNewMonthInfo(_ newMonth: Date)
     func didTapPlusButton(selectedDate: Date)
-
-//    func didTapRefreshButton()
-//    func didTapTodoItem(todo: Todo?)
-//    func didToggleTodo(id: Int)
+    func didTapDeleteTransaction(id: UUID, date: Date)
 }
 
 final class CalendarViewController: UIViewController, CalendarViewControllable {
@@ -24,7 +21,7 @@ final class CalendarViewController: UIViewController, CalendarViewControllable {
     var listener: CalendarPresentableListener?
     
     var viewController: UIViewController { return self }
-
+    
     
     // MARK: View Event Handling
     
@@ -78,6 +75,10 @@ final class CalendarViewController: UIViewController, CalendarViewControllable {
             $0.didTapPlusButton.sink { [weak self] selectedDate in
                 self?.listener?.didTapPlusButton(selectedDate: selectedDate)
             }.store(in: &cancellables)
+            
+            $0.didTapDeleteTransaction.sink { [weak self] (id, date) in
+                self?.listener?.didTapDeleteTransaction(id: id, date: date)
+            }.store(in: &cancellables)
         }
         
         self.viewDisplayLogic.do {
@@ -108,7 +109,7 @@ extension CalendarViewController: CalendarPresentable {
                                                    newMonth: newMonth,
                                                    transactionsByDay: transactionsByDay)
     }
-
+    
     func presentUpdatedTransactions(transactionsByDay: [Date: [DayTransaction]]) {
         self.viewDisplayLogic.displayUpdatedTransactions(transactionsByDay)
     }

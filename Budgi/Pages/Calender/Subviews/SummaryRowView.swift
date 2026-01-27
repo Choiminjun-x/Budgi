@@ -11,6 +11,9 @@ final class SummaryRowView: UIView {
     private let dotView = UIView()
     private let categoryLabel = UILabel()
     private let amountLabel = UILabel()
+    private let deleteButton = UIButton(type: .system)
+    
+    var onTapDelete: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,22 +27,24 @@ final class SummaryRowView: UIView {
         
         self.dotView.do {
             $0.layer.cornerRadius = 4
-            $0.snp.makeConstraints {
-                $0.size.equalTo(CGSize(width: 8, height: 8))
-            }
+            $0.snp.makeConstraints { $0.size.equalTo(CGSize(width: 8, height: 8)) }
         }
         
         self.categoryLabel.do {
             $0.font = .systemFont(ofSize: 15, weight: .regular)
             $0.textColor = .secondaryLabel
             $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-            $0.setContentHuggingPriority(.init(1000), for: .vertical)
         }
         self.amountLabel.do {
             $0.font = .systemFont(ofSize: 16, weight: .semibold)
             $0.textColor = .label
             $0.setContentCompressionResistancePriority(.required, for: .horizontal)
-            $0.setContentHuggingPriority(.init(1000), for: .vertical)
+        }
+        
+        self.deleteButton.do {
+            $0.setImage(UIImage(systemName: "trash"), for: .normal)
+            $0.tintColor = .tertiaryLabel
+            $0.addTarget(self, action: #selector(didTapDelete), for: .touchUpInside)
         }
         
         let leftStack = UIStackView(arrangedSubviews: [dotView, categoryLabel])
@@ -47,10 +52,9 @@ final class SummaryRowView: UIView {
         leftStack.alignment = .center
         leftStack.spacing = 8
         
-        let hStack = UIStackView(arrangedSubviews: [leftStack, amountLabel])
+        let hStack = UIStackView(arrangedSubviews: [leftStack, amountLabel, deleteButton])
         hStack.axis = .horizontal
         hStack.alignment = .center
-        hStack.distribution = .equalSpacing
         hStack.spacing = 8
         
         self.addSubview(hStack)
@@ -64,5 +68,9 @@ final class SummaryRowView: UIView {
         self.categoryLabel.text = category
         self.amountLabel.text = amountText
         self.amountLabel.textColor = tint
+    }
+    
+    @objc private func didTapDelete() {
+        onTapDelete?()
     }
 }

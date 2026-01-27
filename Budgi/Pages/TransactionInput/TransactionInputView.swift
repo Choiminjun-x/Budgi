@@ -84,7 +84,7 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
         self.backgroundColor = .white
         
         self.amountTextField = UITextField().do {
-            $0.placeholder = "금액 입력"
+            $0.placeholder = "0"
             $0.keyboardType = .numberPad
             $0.textAlignment = .right
             $0.font = .systemFont(ofSize: 34, weight: .semibold)

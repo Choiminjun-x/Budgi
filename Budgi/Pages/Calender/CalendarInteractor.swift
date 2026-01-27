@@ -74,8 +74,12 @@ class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarIn
         self.router?.attachTransactionInput(selectedDate: selectedDate)
     }
 
-   
-    
+    func didTapDeleteTransaction(id: UUID, date: Date) {
+        CoreDataManager.shared.deleteTransaction(id: id)
+        let transactionsByDay = self.makeTransactionsByDay(for: [date])
+        self.presenter.presentUpdatedTransactions(transactionsByDay: transactionsByDay)
+    }
+
     private func loadMonths(around centerDate: Date, range: Int = 2) -> CalendarViewModel.PageInfo {
         var months = [[CalendarDay]]()
         var monthBases = [Date]() // 각 섹션에 해당하는 월의 첫날들
@@ -117,7 +121,8 @@ extension CalendarInteractor: TransactionInputListener {
             for transaction in transactions {
                 guard let date = transaction.date else { continue }
                 let dayKey = calendar.startOfDay(for: date)
-                let item = DayTransaction(amount: transaction.amount, categoryId: transaction.category)
+                guard let id = transaction.id else { continue }
+                let item = DayTransaction(id: id, amount: transaction.amount, categoryId: transaction.category)
                 result[dayKey, default: []].append(item)
             }
         }
