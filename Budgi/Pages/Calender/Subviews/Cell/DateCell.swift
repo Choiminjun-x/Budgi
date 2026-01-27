@@ -16,10 +16,7 @@ struct DateCellModel {
 class DateCell: UICollectionViewCell {
     
     private var dayLabel: UILabel!
-    
     private var transactionList: UIStackView!
-    private var desc1: UILabel!
-    private var desc2: UILabel!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -32,12 +29,16 @@ class DateCell: UICollectionViewCell {
     }
     
     private func makeViewLayout() {
+        self.layer.cornerRadius = 8
+        
         self.dayLabel = UILabel().do {
+            $0.font = .systemFont(ofSize: 13, weight: .regular)
             $0.textAlignment = .center
+            $0.setContentHuggingPriority(.init(1000), for: .vertical)
             
             contentView.addSubview($0)
             $0.snp.makeConstraints {
-                $0.top.equalToSuperview()
+                $0.top.equalToSuperview().inset(2)
                 $0.centerX.equalToSuperview()
             }
         }
@@ -50,7 +51,7 @@ class DateCell: UICollectionViewCell {
             
             contentView.addSubview(mainStack)
             mainStack.snp.makeConstraints {
-                $0.top.equalTo(self.dayLabel.snp.bottom).inset(2)
+                $0.top.equalTo(self.dayLabel.snp.bottom).inset(-2)
                 $0.leading.trailing.equalToSuperview().inset(2)
                 $0.bottom.equalToSuperview().inset(2)
             }
@@ -81,7 +82,7 @@ class DateCell: UICollectionViewCell {
     }
     
     func displaySelectedStyle(_ isSelected: Bool) {
-        self.backgroundColor = isSelected ? .gray.withAlphaComponent(0.4) : .white
+        self.backgroundColor = isSelected ? UIColor.secondarySystemBackground : .white
     }
 
     private func displayTransactionAmounts(_ amounts: [Int64]) {
@@ -95,7 +96,7 @@ class DateCell: UICollectionViewCell {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         
-        for amount in amounts {
+        for amount in amounts.prefix(2) {
             let absoluteValue = abs(amount)
             let formatted = formatter.string(from: NSNumber(value: absoluteValue)) ?? "\(absoluteValue)"
             let isExpense = amount < 0
@@ -104,13 +105,14 @@ class DateCell: UICollectionViewCell {
                 $0.text = text
                 $0.textColor = isExpense ? .systemBlue : .systemRed
                 $0.textAlignment = .center
-                $0.font = .systemFont(ofSize: 12, weight: .regular)
+                $0.font = .systemFont(ofSize: 11, weight: .regular)
                 $0.setContentCompressionResistancePriority(.required, for: .vertical)
                 
                 self.transactionList.addArrangedSubview($0)
             }
         }
         
+        // Spacer
         UIView().do {
             $0.setContentHuggingPriority(.defaultLow, for: .vertical)
             $0.setContentCompressionResistancePriority(.defaultLow, for: .vertical)

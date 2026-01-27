@@ -19,9 +19,9 @@ protocol CalendarPresentable: Presentable {
     var listener: CalendarPresentableListener? { get set }
     
     func presentPageInfo(pageInfo: CalendarViewModel.PageInfo)
-    func presentPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [Int64]])
-    func presentNextMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [Int64]])
-    func presentUpdatedTransactions(transactionsByDay: [Date: [Int64]])
+    func presentPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [DayTransaction]])
+    func presentNextMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [DayTransaction]])
+    func presentUpdatedTransactions(transactionsByDay: [Date: [DayTransaction]])
 }
 
 public protocol CalendarListener: AnyObject {
@@ -108,8 +108,8 @@ extension CalendarInteractor: TransactionInputListener {
         self.presenter.presentUpdatedTransactions(transactionsByDay: transactionsByDay)
     }
     
-    private func makeTransactionsByDay(for months: [Date]) -> [Date: [Int64]] {
-        var result: [Date: [Int64]] = [:]
+    private func makeTransactionsByDay(for months: [Date]) -> [Date: [DayTransaction]] {
+        var result: [Date: [DayTransaction]] = [:]
         let calendar = Calendar.current
         
         for month in months {
@@ -117,7 +117,8 @@ extension CalendarInteractor: TransactionInputListener {
             for transaction in transactions {
                 guard let date = transaction.date else { continue }
                 let dayKey = calendar.startOfDay(for: date)
-                result[dayKey, default: []].append(transaction.amount)
+                let item = DayTransaction(amount: transaction.amount, categoryId: transaction.category)
+                result[dayKey, default: []].append(item)
             }
         }
         
