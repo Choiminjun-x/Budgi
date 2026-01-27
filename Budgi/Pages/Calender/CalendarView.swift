@@ -51,6 +51,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     
     private let weekHeader = WeekHeaderView()
     private var calendarCollectionView: UICollectionView!
+    private var calendarHeightConstraint: Constraint?
     
     private var separateLine: UIView!
     
@@ -69,6 +70,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     
     var currentPage: Int = 2
     var selectedIndexPath: IndexPath?
+    private var selectedDate: Date?
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -282,6 +284,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 let todayIndex = self.months[centerIndex].firstIndex(where: { $0.isToday }) {
                  let todayPath = IndexPath(item: todayIndex, section: centerIndex)
                  self.selectedIndexPath = todayPath
+                 self.selectedDate = Calendar.current.startOfDay(for: self.months[centerIndex][todayIndex].date)
                  self.calendarCollectionView.layoutIfNeeded()
                  if let cell = self.calendarCollectionView.cellForItem(at: todayPath) as? DateCell {
                      cell.displaySelectedStyle(true)
@@ -323,6 +326,8 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 
                 self.currentPage += 1
                 self.updateMonthTitle(forPageIndex: self.currentPage)
+                // 섹션 인덱스가 시프트 되었으므로, 선택된 날짜 기준으로 선택 인덱스 재매핑
+                self.remapSelectionIndexPath()
                 
                 self.calendarCollectionView.isUserInteractionEnabled = true
                 CATransaction.commit()
@@ -430,14 +435,46 @@ extension CalendarView: UICollectionViewDelegate, UICollectionViewDataSource {
             self.reloadSummaryList(for: currentDate)
         }
         
-        // 새로운 선택 위치 저장
+        // 새로운 선택 위치/날짜 저장
         self.selectedIndexPath = indexPath
+        self.selectedDate = Calendar.current.startOfDay(for: self.months[indexPath.section][indexPath.item].date)
     }
 }
 
 // MARK: - Summary List Rendering
 
 extension CalendarView {
+    private func indexPath(for date: Date) -> IndexPath? {
+        let key = Calendar.current.startOfDay(for: date)
+        for (section, days) in self.months.enumerated() {
+            if let item = days.firstIndex(where: { Calendar.current.startOfDay(for: $0.date) == key }) {
+                return IndexPath(item: item, section: section)
+            }
+        }
+        return nil
+    }
+
+    private func remapSelectionIndexPath() {
+        guard let selectedDate else { return }
+        let newPath = self.indexPath(for: selectedDate)
+        guard let newPath else { return }
+
+        let oldPath = self.selectedIndexPath
+        self.selectedIndexPath = newPath
+
+        if let old = oldPath, old != newPath {
+            if let oldCell = self.calendarCollectionView.cellForItem(at: old) as? DateCell {
+                oldCell.displaySelectedStyle(false)
+            } else {
+                self.calendarCollectionView.reloadItems(at: [old])
+            }
+        }
+        if let newCell = self.calendarCollectionView.cellForItem(at: newPath) as? DateCell {
+            newCell.displaySelectedStyle(true)
+        } else {
+            self.calendarCollectionView.reloadItems(at: [newPath])
+        }
+    }
     
     private func reloadSummaryList(for date: Date) {
         self.summaryList.arrangedSubviews.forEach { view in
