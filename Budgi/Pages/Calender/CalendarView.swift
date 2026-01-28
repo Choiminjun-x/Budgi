@@ -15,6 +15,7 @@ struct DayTransaction: Equatable {
     let id: UUID
     let amount: Int64
     let categoryId: String?
+    let memo: String?
 }
 
 
@@ -498,6 +499,7 @@ extension CalendarView {
             let name = self.categoryName(for: item.categoryId)
             row.configure(category: name,
                           amountText: (item.amount < 0 ? "-" : "+") + text,
+                          memo: item.memo,
                           tint: signColor)
             // 내역 삭제
             row.onTapDelete = { [weak self] in

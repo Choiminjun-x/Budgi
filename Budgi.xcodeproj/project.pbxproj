@@ -170,6 +170,14 @@
 			path = Subviews;
 			sourceTree = "<group>";
 		};
+		3EC04F6D2F28AED100E9DCAE /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				B0D750AD2F277A7F00CFE69E /* BudgiModel.xcdatamodeld */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
 		707EFDCC713172A212835894 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -352,8 +360,8 @@
 		B0D750B62F277C3C00CFE69E /* Core Data */ = {
 			isa = PBXGroup;
 			children = (
+				3EC04F6D2F28AED100E9DCAE /* Model */,
 				B0D750B02F277ADD00CFE69E /* CoreDataManager.swift */,
-				B0D750AD2F277A7F00CFE69E /* BudgiModel.xcdatamodeld */,
 			);
 			path = "Core Data";
 			sourceTree = "<group>";

@@ -122,7 +122,7 @@ extension CalendarInteractor: TransactionInputListener {
                 guard let date = transaction.date else { continue }
                 let dayKey = calendar.startOfDay(for: date)
                 guard let id = transaction.id else { continue }
-                let item = DayTransaction(id: id, amount: transaction.amount, categoryId: transaction.category)
+                let item = DayTransaction(id: id, amount: transaction.amount, categoryId: transaction.category, memo: transaction.memo)
                 result[dayKey, default: []].append(item)
             }
         }

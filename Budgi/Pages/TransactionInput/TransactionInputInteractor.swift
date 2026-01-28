@@ -47,7 +47,7 @@ class TransactionInputInteractor: PresentableInteractor<TransactionInputPresenta
     }
 
     // 저장 버튼
-    func didTapSaveButton(amount: Int64, categoryId: String?) {
+    func didTapSaveButton(amount: Int64, categoryId: String?, memo: String?) {
         /// 1. 생성 - context에 자동 등록
         let transaction = Transaction(context: CoreDataManager.shared.context)
         /// 2. 수정 - context 내부 객체 상태 변경
@@ -55,7 +55,7 @@ class TransactionInputInteractor: PresentableInteractor<TransactionInputPresenta
         transaction.amount = amount
         transaction.category = (categoryId?.isEmpty == false ? categoryId : nil) ?? "uncat"
         transaction.date = self.selectedDate
-        transaction.memo = "memo"
+        transaction.memo = memo
         
         /// 3. 저장 - context에 있는 모든 변경 사항을 저장소에 반영
         CoreDataManager.shared.saveContext()

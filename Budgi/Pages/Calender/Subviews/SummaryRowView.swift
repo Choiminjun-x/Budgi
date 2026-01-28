@@ -10,6 +10,7 @@ import UIKit
 final class SummaryRowView: UIView {
     private let dotView = UIView()
     private let categoryLabel = UILabel()
+    private let memoLabel = UILabel()
     private let amountLabel = UILabel()
     private let deleteButton = UIButton(type: .system)
     
@@ -33,6 +34,15 @@ final class SummaryRowView: UIView {
         self.categoryLabel.do {
             $0.font = .systemFont(ofSize: 15, weight: .regular)
             $0.textColor = .secondaryLabel
+            $0.numberOfLines = 1
+            // 카테고리는 최대한 보이고, 메모가 먼저 잘리도록 함
+            $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+        }
+        self.memoLabel.do {
+            $0.font = .systemFont(ofSize: 15, weight: .regular)
+            $0.textColor = .tertiaryLabel
+            $0.numberOfLines = 1
+            $0.lineBreakMode = .byTruncatingTail
             $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
         self.amountLabel.do {
@@ -47,15 +57,24 @@ final class SummaryRowView: UIView {
             $0.addTarget(self, action: #selector(didTapDelete), for: .touchUpInside)
         }
         
-        let leftStack = UIStackView(arrangedSubviews: [dotView, categoryLabel])
+        let leftStack = UIStackView(arrangedSubviews: [dotView, categoryLabel, memoLabel])
         leftStack.axis = .horizontal
         leftStack.alignment = .center
-        leftStack.spacing = 8
+        // 카테고리와 메모는 더 촘촘하게 붙임
+        leftStack.spacing = 4
+        // 왼쪽 스택이 내용을 유지하면서 오른쪽(금액)과 간격을 확보하도록 우선순위 설정
+        leftStack.setContentHuggingPriority(.defaultHigh, for: .horizontal)
+        leftStack.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         
         let hStack = UIStackView(arrangedSubviews: [leftStack, amountLabel, deleteButton])
         hStack.axis = .horizontal
         hStack.alignment = .center
-        hStack.spacing = 8
+        // 왼쪽 묶음과 금액 사이 기본 간격을 넉넉히 확보
+        hStack.spacing = 12
+
+        // 금액/삭제 버튼은 붙어있고, 왼쪽과는 여유 간격이 생기도록 설정
+        self.amountLabel.setContentHuggingPriority(.required, for: .horizontal)
+        self.deleteButton.setContentHuggingPriority(.required, for: .horizontal)
         
         self.addSubview(hStack)
         hStack.snp.makeConstraints { make in
@@ -63,9 +82,16 @@ final class SummaryRowView: UIView {
         }
     }
     
-    func configure(category: String, amountText: String, tint: UIColor) {
+    func configure(category: String, amountText: String, memo: String?, tint: UIColor) {
         self.dotView.backgroundColor = tint
         self.categoryLabel.text = category
+        if let memo, !memo.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            self.memoLabel.isHidden = false
+            self.memoLabel.text = memo
+        } else {
+            self.memoLabel.isHidden = true
+            self.memoLabel.text = nil
+        }
         self.amountLabel.text = amountText
         self.amountLabel.textColor = tint
     }

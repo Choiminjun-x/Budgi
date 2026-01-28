@@ -12,7 +12,7 @@ import SnapKit
 // MARK: ViewEventLogic
 
 protocol TransactionInputViewEventLogic where Self: NSObject {
-    var saveButtonDidTap: PassthroughSubject<(Int64, String?), Never> { get }
+    var saveButtonDidTap: PassthroughSubject<(Int64, String?, String?), Never> { get }
 }
 
 // MARK: ViewDisplayLogic
@@ -37,6 +37,10 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
     
     private var categoryCollectionView: UICollectionView!
     private var categoryCollectionHeight: Constraint?
+
+    private var memoTextView: UITextView!
+    private var memoPlaceholderLabel: UILabel!
+    private var memoHeight: Constraint?
     
     private var saveButton: UIButton!
     
@@ -52,7 +56,7 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
     
     // MARK: EventLogic
     
-    var saveButtonDidTap: PassthroughSubject<(Int64, String?), Never> = .init()
+    var saveButtonDidTap: PassthroughSubject<(Int64, String?, String?), Never> = .init()
     
     
     // MARK: instantiate
@@ -77,6 +81,24 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
     static func create() -> TransactionInputView {
         return TransactionInputView()
     }
+    
+    
+    // MARK: layoutSubviews
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // Keep collection height in sync with content
+        self.updateCategoryCollectionHeight()
+    }
+    
+    private func updateCategoryCollectionHeight() {
+        self.categoryCollectionView.collectionViewLayout.invalidateLayout()
+        self.categoryCollectionView.layoutIfNeeded()
+        var height = self.categoryCollectionView.collectionViewLayout.collectionViewContentSize.height
+        if height < 44 { height = 44 }
+        self.categoryCollectionHeight?.update(offset: height)
+    }
+    
     
     // MARK: MakeViewLayout
     
@@ -162,6 +184,37 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
                 self.categoryCollectionHeight = $0.height.equalTo(44).priority(.high).constraint
             }
         }
+
+        // Memo TextView (inline, auto-resizing between 44~120)
+        self.memoTextView = UITextView().do {
+            $0.font = .systemFont(ofSize: 16)
+            $0.textColor = .label
+            $0.backgroundColor = .secondarySystemBackground
+            $0.layer.cornerRadius = 12
+            $0.layer.borderWidth = 1
+            $0.layer.borderColor = UIColor.separator.cgColor
+            $0.textContainerInset = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+            $0.isScrollEnabled = false
+            $0.delegate = self
+
+            self.addSubview($0)
+            $0.snp.makeConstraints {
+                $0.top.equalTo(self.categoryCollectionView.snp.bottom).offset(12)
+                $0.leading.trailing.equalToSuperview().inset(20)
+                self.memoHeight = $0.height.equalTo(44).priority(.high).constraint
+            }
+        }
+
+        self.memoPlaceholderLabel = UILabel().do {
+            $0.text = "메모(선택)"
+            $0.textColor = .placeholderText
+            $0.font = .systemFont(ofSize: 16)
+            self.memoTextView.addSubview($0)
+            $0.snp.makeConstraints {
+                $0.top.equalToSuperview().inset(10)
+                $0.leading.equalToSuperview().inset(16)
+            }
+        }
         
         self.saveButton = UIButton(type: .system).do {
             $0.setTitle("저장", for: .normal)
@@ -172,7 +225,7 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
             
             self.addSubview($0)
             $0.snp.makeConstraints {
-                $0.top.equalTo(self.categoryCollectionView.snp.bottom).offset(12)
+                $0.top.equalTo(self.memoTextView.snp.bottom).offset(12)
                 $0.leading.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(52)
             }
@@ -207,10 +260,13 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
                     }
                     self.amountTextField.layer.borderColor = UIColor.separator.cgColor
                     let signedAmount = self.isExpenseSelected ? -abs(rawAmount) : abs(rawAmount)
-                    self.saveButtonDidTap.send((signedAmount, self.selectedCategoryId))
+                    let memo = self.memoTextView.text.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let memoOrNil = memo.isEmpty ? nil : memo
+                    self.saveButtonDidTap.send((signedAmount, self.selectedCategoryId, memoOrNil))
                 }.store(in: &cancellables)
         }
     }
+    
     
     // MARK: displayPageInfo
     
@@ -251,6 +307,7 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
         }
     }
 }
+
 
 // MARK: - Category Model
 
@@ -306,20 +363,15 @@ extension TransactionInputView: UICollectionViewDataSource, UICollectionViewDele
 }
 
 
-// MARK: - Layout Helpers
+// MARK: - UITextViewDelegate
 
-extension TransactionInputView {
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        // Keep collection height in sync with content
-        self.updateCategoryCollectionHeight()
-    }
-
-    private func updateCategoryCollectionHeight() {
-        self.categoryCollectionView.collectionViewLayout.invalidateLayout()
-        self.categoryCollectionView.layoutIfNeeded()
-        var height = self.categoryCollectionView.collectionViewLayout.collectionViewContentSize.height
-        if height < 44 { height = 44 }
-        self.categoryCollectionHeight?.update(offset: height)
+extension TransactionInputView: UITextViewDelegate {
+    func textViewDidChange(_ textView: UITextView) {
+        self.memoPlaceholderLabel.isHidden = !textView.text.isEmpty
+        let targetWidth = textView.bounds.width
+        let size = textView.sizeThatFits(CGSize(width: targetWidth, height: .greatestFiniteMagnitude))
+        let clamped = min(max(44, size.height), 120)
+        self.memoHeight?.update(offset: clamped)
+        self.layoutIfNeeded()
     }
 }
