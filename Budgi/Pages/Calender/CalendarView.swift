@@ -18,6 +18,41 @@ struct DayTransaction: Equatable {
     let memo: String?
 }
 
+enum CategoryType: String {
+    /// 지출
+    case 식비 = "식비"
+    case 교통 = "교통"
+    case 취미 = "취미"
+    case 쇼핑 = "쇼핑"
+    case 생활 = "생활"
+    case 의료 = "의료"
+    case 기타 = "기타"
+    /// 수입
+    case 급여 = "급여"
+    case 보너스 = "보너스"
+    case 용돈 = "용돈"
+    case 미분류 = "미분류"
+    
+    
+    static func getCategoryType(for id: String?) -> CategoryType {
+        guard let id = id else { return .미분류 }
+        switch id {
+        case "food": return .식비
+        case "transport": return .교통
+        case "hobby": return .취미
+        case "shopping": return .쇼핑
+        case "life": return .생활
+        case "health": return .의료
+        case "etc_exp": return .기타
+        case "salary": return .급여
+        case "bonus": return .보너스
+        case "gift": return .용돈
+        case "etc_inc": return .기타
+        case "uncat": return .미분류
+        default: return .기타
+        }
+    }
+}
 
 // MARK: - EventLogic
 
@@ -508,7 +543,7 @@ extension CalendarView {
             let row = SummaryRowView()
             let text = formatter.string(from: NSNumber(value: abs(item.amount))) ?? "0"
             let signColor: UIColor = item.amount < 0 ? .systemBlue : .systemRed
-            let name = self.categoryName(for: item.categoryId)
+            let name = CategoryType.getCategoryType(for: item.categoryId).rawValue
             row.configure(category: name,
                           amountText: (item.amount < 0 ? "-" : "+") + text,
                           memo: item.memo,
@@ -530,26 +565,6 @@ extension CalendarView {
             $0.setContentHuggingPriority(.defaultLow, for: .vertical)
             $0.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
             self.summaryList.addArrangedSubview($0)
-        }
-    }
-
-    private func categoryName(for id: String?) -> String {
-        guard let id = id else { return "미분류" }
-        switch id {
-        case "food": return "식비"
-        case "transport": return "교통"
-        case "hobby": return "취미"
-        case "shopping": return "쇼핑"
-        case "life": return "생활"
-        case "health": return "의료"
-        case "etc_exp": return "기타"
-        case "salary": return "급여"
-        case "bonus": return "보너스"
-        case "gift": return "용돈"
-        case "etc_inc": return "기타"
-        case "uncat": return "미분류"
-            
-        default: return id
         }
     }
 }

@@ -54,7 +54,7 @@ class TransactionInputInteractor: PresentableInteractor<TransactionInputPresenta
         /// 2. 수정 - context 내부 객체 상태 변경
         transaction.id = UUID()
         transaction.amount = amount
-        transaction.category = (categoryId?.isEmpty == false ? categoryId : nil) ?? "uncat"
+        transaction.categoryId = (categoryId?.isEmpty == false ? categoryId : nil) ?? "uncat"
         transaction.date = self.selectedDate
         transaction.memo = memo
         

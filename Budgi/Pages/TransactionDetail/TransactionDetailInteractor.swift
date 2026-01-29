@@ -53,7 +53,7 @@ class TransactionDetailInteractor: PresentableInteractor<TransactionDetailPresen
         dateFormatter.dateFormat = "yyyy년 MM월 dd일"
         let dateText = tx.date.map { dateFormatter.string(from: $0) } ?? ""
         let info = TransactionDetailViewModel.Detail(
-            categoryName: self.categoryName(for: tx.category),
+            categoryName: CategoryType.getCategoryType(for: tx.categoryId).rawValue,
             amountText: amountText,
             amountTint: tint,
             dateText: dateText,
@@ -65,26 +65,5 @@ class TransactionDetailInteractor: PresentableInteractor<TransactionDetailPresen
     // 닫기 버튼
     func didTapClose() {
         self.listener?.transactionDetailDidClose()
-    }
-}
-
-private extension TransactionDetailInteractor {
-    func categoryName(for id: String?) -> String {
-        guard let id = id else { return "미분류" }
-        switch id {
-        case "food": return "식비"
-        case "transport": return "교통"
-        case "hobby": return "취미"
-        case "shopping": return "쇼핑"
-        case "life": return "생활"
-        case "health": return "의료"
-        case "etc_exp": return "기타"
-        case "salary": return "급여"
-        case "bonus": return "보너스"
-        case "gift": return "용돈"
-        case "etc_inc": return "기타"
-        case "uncat": return "미분류"
-        default: return id
-        }
     }
 }
