@@ -49,7 +49,7 @@
 		B09F4AAB2F2248AE00411130 /* SettingBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A962F2248AE00411130 /* SettingBuilder.swift */; };
 		B09F4AAC2F2248AE00411130 /* AppRootBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A862F2248AE00411130 /* AppRootBuilder.swift */; };
 		B09F4AAD2F2248AE00411130 /* CalendarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B09F4A942F2248AE00411130 /* CalendarViewController.swift */; };
-		B0D750AF2F277A7F00CFE69E /* BudgiModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B0D750AD2F277A7F00CFE69E /* BudgiModel.xcdatamodeld */; };
+		B0D750AF2F277A7F00CFE69E /* TransactionDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B0D750AD2F277A7F00CFE69E /* TransactionDataModel.xcdatamodeld */; };
 		B0D750B12F277ADD00CFE69E /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0D750B02F277ADD00CFE69E /* CoreDataManager.swift */; };
 		B27F93AE1831B57DEEC35980 /* Pods_BudgiTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 916183B809334A38AD587663 /* Pods_BudgiTests.framework */; };
 		BAF17F489AFF7EE34F4E50CA /* Pods_Budgi.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6BBA494F92B2ED2C0D3E9DBF /* Pods_Budgi.framework */; };
@@ -123,7 +123,7 @@
 		B09F4A982F2248AE00411130 /* SettingRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingRouter.swift; sourceTree = "<group>"; };
 		B09F4A992F2248AE00411130 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		B09F4A9A2F2248AE00411130 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
-		B0D750AE2F277A7F00CFE69E /* BudgiModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BudgiModel.xcdatamodel; sourceTree = "<group>"; };
+		B0D750AE2F277A7F00CFE69E /* TransactionDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TransactionDataModel.xcdatamodel; sourceTree = "<group>"; };
 		B0D750B02F277ADD00CFE69E /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		C6D5A0D70DECCFE55AD40447 /* Pods-BudgiTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BudgiTests.release.xcconfig"; path = "Target Support Files/Pods-BudgiTests/Pods-BudgiTests.release.xcconfig"; sourceTree = "<group>"; };
 		CD0F7B421C85116E8109C05A /* Pods-Budgi.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Budgi.release.xcconfig"; path = "Target Support Files/Pods-Budgi/Pods-Budgi.release.xcconfig"; sourceTree = "<group>"; };
@@ -195,7 +195,7 @@
 		3EC04F6D2F28AED100E9DCAE /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				B0D750AD2F277A7F00CFE69E /* BudgiModel.xcdatamodeld */,
+				B0D750AD2F277A7F00CFE69E /* TransactionDataModel.xcdatamodeld */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -655,7 +655,7 @@
 				B00683372F2471A9008D77EA /* TransactionInputViewController.swift in Sources */,
 				B09F4AA22F2248AE00411130 /* SettingViewController.swift in Sources */,
 				B09F4AA32F2248AE00411130 /* CalendarRouter.swift in Sources */,
-				B0D750AF2F277A7F00CFE69E /* BudgiModel.xcdatamodeld in Sources */,
+				B0D750AF2F277A7F00CFE69E /* TransactionDataModel.xcdatamodeld in Sources */,
 				B09F4AA42F2248AE00411130 /* SettingInteractor.swift in Sources */,
 				B0D750B12F277ADD00CFE69E /* CoreDataManager.swift in Sources */,
 				B006833D2F247386008D77EA /* UIButton+Extension.swift in Sources */,
@@ -1026,13 +1026,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		B0D750AD2F277A7F00CFE69E /* BudgiModel.xcdatamodeld */ = {
+		B0D750AD2F277A7F00CFE69E /* TransactionDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				B0D750AE2F277A7F00CFE69E /* BudgiModel.xcdatamodel */,
+				B0D750AE2F277A7F00CFE69E /* TransactionDataModel.xcdatamodel */,
 			);
-			currentVersion = B0D750AE2F277A7F00CFE69E /* BudgiModel.xcdatamodel */;
-			path = BudgiModel.xcdatamodeld;
+			currentVersion = B0D750AE2F277A7F00CFE69E /* TransactionDataModel.xcdatamodel */;
+			path = TransactionDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

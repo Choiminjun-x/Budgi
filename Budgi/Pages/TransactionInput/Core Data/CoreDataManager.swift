@@ -18,7 +18,7 @@ final class CoreDataManager {
     }
     
     private init() {
-        self.container = NSPersistentContainer(name: "BudgiModel")
+        self.container = NSPersistentContainer(name: "TransactionDataModel")
         self.container.loadPersistentStores { _, error in
             if let error = error {
                 fatalError("❌ CoreData load error: \(error)")
