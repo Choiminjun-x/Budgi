@@ -11,8 +11,8 @@ import RIBs
 protocol CalendarRouting: ViewableRouting {
     func attachTransactionInput(selectedDate: Date)
     func detachTransactionInput()
-    //    func attachTodoListDetail()
-    //    func detachTodoListDetail()
+    func attachTransactionDetail(id: UUID)
+    func detachTransactionDetail()
 }
 
 protocol CalendarPresentable: Presentable {
@@ -74,6 +74,10 @@ class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarIn
         self.router?.attachTransactionInput(selectedDate: selectedDate)
     }
 
+    func didTapTransactionDetail(id: UUID) {
+        self.router?.attachTransactionDetail(id: id)
+    }
+    
     func didTapDeleteTransaction(id: UUID, date: Date) {
         CoreDataManager.shared.deleteTransaction(id: id)
         let transactionsByDay = self.makeTransactionsByDay(for: [date])
@@ -96,21 +100,6 @@ class CalendarInteractor: PresentableInteractor<CalendarPresentable>, CalendarIn
                      monthBases: monthBases,
                      transactionsByDay: [:])
     }
-}
-
-
-// MARK: TransactionInputListener
-
-extension CalendarInteractor: TransactionInputListener {
-    
-    func transactionInputDidClose() {
-        self.router?.detachTransactionInput()
-    }
-
-    func transactionInputDidSave(savedDate: Date) {
-        let transactionsByDay = self.makeTransactionsByDay(for: [savedDate])
-        self.presenter.presentUpdatedTransactions(transactionsByDay: transactionsByDay)
-    }
     
     private func makeTransactionsByDay(for months: [Date]) -> [Date: [DayTransaction]] {
         var result: [Date: [DayTransaction]] = [:]
@@ -128,5 +117,30 @@ extension CalendarInteractor: TransactionInputListener {
         }
         
         return result
+    }
+}
+
+
+// MARK: TransactionInputListener
+
+extension CalendarInteractor: TransactionInputListener {
+    
+    func transactionInputDidClose() {
+        self.router?.detachTransactionInput()
+    }
+
+    func transactionInputDidSave(savedDate: Date) {
+        let transactionsByDay = self.makeTransactionsByDay(for: [savedDate])
+        self.presenter.presentUpdatedTransactions(transactionsByDay: transactionsByDay)
+    }
+}
+
+
+// MARK: TransactionDetailListener
+
+extension CalendarInteractor: TransactionDetailListener {
+    
+    func transactionDetailDidClose() {
+        self.router?.detachTransactionDetail()
     }
 }

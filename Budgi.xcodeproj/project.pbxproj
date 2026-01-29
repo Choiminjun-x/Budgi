@@ -8,6 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		02C74CC22E89CE6E5D7D3203 /* Pods_Budgi_BudgiUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E886D7FB961E64424E71D5C2 /* Pods_Budgi_BudgiUITests.framework */; };
+		3E543E302F29C63400C7E7E0 /* TransactionDetailBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E543E2F2F29C63400C7E7E0 /* TransactionDetailBuilder.swift */; };
+		3E543E342F29C70000C7E7E0 /* TransactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E543E332F29C70000C7E7E0 /* TransactionDetailView.swift */; };
+		3E543E362F29C70C00C7E7E0 /* TransactionDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E543E352F29C70C00C7E7E0 /* TransactionDetailViewController.swift */; };
+		3E543E382F29C71300C7E7E0 /* TransactionDetailInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E543E372F29C71300C7E7E0 /* TransactionDetailInteractor.swift */; };
+		3E543E3A2F29C71B00C7E7E0 /* TransactionDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E543E392F29C71B00C7E7E0 /* TransactionDetailRouter.swift */; };
 		3EAB4BD02F283805006CB41D /* CategoryChipCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EAB4BCF2F283805006CB41D /* CategoryChipCell.swift */; };
 		3EAB4BD22F286445006CB41D /* SummaryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EAB4BD12F286445006CB41D /* SummaryRowView.swift */; };
 		B00683332F247189008D77EA /* TransactionInputBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00683322F247189008D77EA /* TransactionInputBuilder.swift */; };
@@ -69,6 +74,11 @@
 
 /* Begin PBXFileReference section */
 		14E4EA3B105414C84F1A4A0C /* Pods-Budgi-BudgiUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Budgi-BudgiUITests.release.xcconfig"; path = "Target Support Files/Pods-Budgi-BudgiUITests/Pods-Budgi-BudgiUITests.release.xcconfig"; sourceTree = "<group>"; };
+		3E543E2F2F29C63400C7E7E0 /* TransactionDetailBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailBuilder.swift; sourceTree = "<group>"; };
+		3E543E332F29C70000C7E7E0 /* TransactionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailView.swift; sourceTree = "<group>"; };
+		3E543E352F29C70C00C7E7E0 /* TransactionDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailViewController.swift; sourceTree = "<group>"; };
+		3E543E372F29C71300C7E7E0 /* TransactionDetailInteractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailInteractor.swift; sourceTree = "<group>"; };
+		3E543E392F29C71B00C7E7E0 /* TransactionDetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailRouter.swift; sourceTree = "<group>"; };
 		3EAB4BCF2F283805006CB41D /* CategoryChipCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryChipCell.swift; sourceTree = "<group>"; };
 		3EAB4BD12F286445006CB41D /* SummaryRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryRowView.swift; sourceTree = "<group>"; };
 		564C58518BCEADFB1509CCE9 /* Pods-BudgiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BudgiTests.debug.xcconfig"; path = "Target Support Files/Pods-BudgiTests/Pods-BudgiTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -160,6 +170,18 @@
 				C6D5A0D70DECCFE55AD40447 /* Pods-BudgiTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		3E543E2E2F29C5C900C7E7E0 /* TransactionDetail */ = {
+			isa = PBXGroup;
+			children = (
+				3E543E2F2F29C63400C7E7E0 /* TransactionDetailBuilder.swift */,
+				3E543E332F29C70000C7E7E0 /* TransactionDetailView.swift */,
+				3E543E352F29C70C00C7E7E0 /* TransactionDetailViewController.swift */,
+				3E543E372F29C71300C7E7E0 /* TransactionDetailInteractor.swift */,
+				3E543E392F29C71B00C7E7E0 /* TransactionDetailRouter.swift */,
+			);
+			path = TransactionDetail;
 			sourceTree = "<group>";
 		};
 		3EAB4BCE2F2837EA006CB41D /* Subviews */ = {
@@ -269,6 +291,7 @@
 				B09F4A8A2F2248AE00411130 /* AppRoot */,
 				B09F4A952F2248AE00411130 /* Calender */,
 				B00683312F247130008D77EA /* TransactionInput */,
+				3E543E2E2F29C5C900C7E7E0 /* TransactionDetail */,
 				B09F4A9B2F2248AE00411130 /* Setting */,
 			);
 			path = Pages;
@@ -625,6 +648,7 @@
 				B09F4A9D2F2248AE00411130 /* AppRootRouter.swift in Sources */,
 				B09F4A9E2F2248AE00411130 /* WeekHeaderView.swift in Sources */,
 				B09F4A9F2F2248AE00411130 /* AppRootInteractor.swift in Sources */,
+				3E543E362F29C70C00C7E7E0 /* TransactionDetailViewController.swift in Sources */,
 				B09F4AA02F2248AE00411130 /* CalendarView.swift in Sources */,
 				B09F4AA12F2248AE00411130 /* CalendarDateGenerator.swift in Sources */,
 				3EAB4BD22F286445006CB41D /* SummaryRowView.swift in Sources */,
@@ -636,6 +660,7 @@
 				B0D750B12F277ADD00CFE69E /* CoreDataManager.swift in Sources */,
 				B006833D2F247386008D77EA /* UIButton+Extension.swift in Sources */,
 				B09F4AA52F2248AE00411130 /* AppComponent.swift in Sources */,
+				3E543E302F29C63400C7E7E0 /* TransactionDetailBuilder.swift in Sources */,
 				B09F4AA62F2248AE00411130 /* SettingRouter.swift in Sources */,
 				B09F4AA72F2248AE00411130 /* CalendarBuilder.swift in Sources */,
 				B09F4AA82F2248AE00411130 /* CalendarInteractor.swift in Sources */,
@@ -644,13 +669,16 @@
 				3EAB4BD02F283805006CB41D /* CategoryChipCell.swift in Sources */,
 				B09F4AAA2F2248AE00411130 /* MainTabBarController.swift in Sources */,
 				B09F4AAB2F2248AE00411130 /* SettingBuilder.swift in Sources */,
+				3E543E382F29C71300C7E7E0 /* TransactionDetailInteractor.swift in Sources */,
 				B09F4AAC2F2248AE00411130 /* AppRootBuilder.swift in Sources */,
 				B00683392F2471B2008D77EA /* TransactionInputInteractor.swift in Sources */,
 				B09F4AAD2F2248AE00411130 /* CalendarViewController.swift in Sources */,
 				B09F4A822F2247CE00411130 /* UICollectionView+Extension.swift in Sources */,
+				3E543E3A2F29C71B00C7E7E0 /* TransactionDetailRouter.swift in Sources */,
 				B006833B2F2471B8008D77EA /* TransactionInputRouter.swift in Sources */,
 				B00683352F247199008D77EA /* TransactionInputView.swift in Sources */,
 				B09F4A832F2247CE00411130 /* +Sets.swift in Sources */,
+				3E543E342F29C70000C7E7E0 /* TransactionDetailView.swift in Sources */,
 				B09F4A842F2247CE00411130 /* Sets.swift in Sources */,
 				B09F4A6C2F2246E100411130 /* AppDelegate.swift in Sources */,
 				B09F4A6D2F2246E100411130 /* SceneDelegate.swift in Sources */,

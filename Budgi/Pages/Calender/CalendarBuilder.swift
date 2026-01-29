@@ -12,7 +12,7 @@ protocol CalendarDependency: Dependency {
     var dateGenerator: DateGenerator { get }
 }
 
-final class CalendarComponent: Component<CalendarDependency>, TransactionInputDependency {
+final class CalendarComponent: Component<CalendarDependency>, TransactionInputDependency, TransactionDetailDependency {
     var dateGenerator: DateGenerator { dependency.dateGenerator }
 }
 
@@ -29,12 +29,16 @@ class CalendarBuilder: Builder<CalendarDependency>, CalendarBuildable {
     public func build(withListener listener: CalendarListener) -> ViewableRouting {
         let component = CalendarComponent(dependency: dependency)
         let viewController = CalendarViewController()
-        let interactor = CalendarInteractor(presenter: viewController, dateGenerator: dependency.dateGenerator)
+        let interactor = CalendarInteractor(presenter: viewController, dateGenerator: dependency.dateGenerator) // AppRoot에서 dateGenerator 생성
         interactor.listener = listener
 
+        /// Calendar child Builder
         let transactionInputBuilder = TransactionInputBuilder(dependency: component)
+        let transactionDetailBuilder = TransactionDetailBuilder(dependency: component)
+        
         return CalendarRouter(interactor: interactor,
                               viewController: viewController,
-                              transactionInputBuilder: transactionInputBuilder)
+                              transactionInputBuilder: transactionInputBuilder,
+                              transactionDetailBuilder: transactionDetailBuilder)
     }
 }

@@ -28,6 +28,7 @@ class TransactionInputInteractor: PresentableInteractor<TransactionInputPresenta
     
     var router: TransactionInputRouting?
     var listener: TransactionInputListener?
+    
     private let selectedDate: Date
     
     init(presenter: TransactionInputPresentable, selectedDate: Date) {

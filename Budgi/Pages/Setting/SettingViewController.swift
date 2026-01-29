@@ -7,6 +7,7 @@
 
 import UIKit
 import Combine
+import RIBs
 
 protocol SettingPresentableListener: AnyObject {
     func requestPageInfo()

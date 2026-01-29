@@ -7,12 +7,15 @@
 
 import UIKit
 import Combine
+import RIBs
 
 protocol CalendarPresentableListener: AnyObject {
     func requestPageInfo()
     func requestPreviousMonthInfo(_ newMonth: Date)
     func requestNewMonthInfo(_ newMonth: Date)
+    
     func didTapPlusButton(selectedDate: Date)
+    func didTapTransactionDetail(id: UUID)
     func didTapDeleteTransaction(id: UUID, date: Date)
 }
 
@@ -78,6 +81,10 @@ final class CalendarViewController: UIViewController, CalendarViewControllable {
             
             $0.didTapDeleteTransaction.sink { [weak self] (id, date) in
                 self?.listener?.didTapDeleteTransaction(id: id, date: date)
+            }.store(in: &cancellables)
+
+            $0.didTapTransactionRow.sink { [weak self] id in
+                self?.listener?.didTapTransactionDetail(id: id)
             }.store(in: &cancellables)
         }
         

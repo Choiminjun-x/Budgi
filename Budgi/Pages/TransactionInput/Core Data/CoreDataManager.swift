@@ -57,6 +57,20 @@ extension CoreDataManager {
         }
     }
     
+    /// id로 단건 조회
+    func fetchTransaction(id: UUID) -> Transaction? {
+        let request: NSFetchRequest<Transaction> = Transaction.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+        do {
+            return try context.fetch(request).first
+        } catch {
+            print("❌ Fetch by id failed: \(error)")
+            return nil
+        }
+    }
+
+    
     /// id로 단건 삭제
     @discardableResult
     func deleteTransaction(id: UUID) -> Bool {

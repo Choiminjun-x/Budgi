@@ -27,6 +27,7 @@ protocol CalendarViewEventLogic where Self: NSObject {
     
     var didTapPlusButton: PassthroughSubject<Date, Never> { get }
     var didTapDeleteTransaction: PassthroughSubject<(UUID, Date), Never> { get }
+    var didTapTransactionRow: PassthroughSubject<UUID, Never> { get }
 }
 
 // MARK: - DisplayLogic
@@ -84,6 +85,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     
     var didTapPlusButton: PassthroughSubject<Date, Never> = .init()
     var didTapDeleteTransaction: PassthroughSubject<(UUID, Date), Never> = .init()
+    var didTapTransactionRow: PassthroughSubject<UUID, Never> = .init()
     
     var displayNaviTitle: PassthroughSubject<String, Never> = .init()
 
@@ -352,9 +354,19 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     }
 
     func displayUpdatedTransactions(_ transactionsByDay: [Date: [DayTransaction]]) {
-        self.transactionsByDay.merge(transactionsByDay) { _, new in
-            new
+        /// 1) 삭제 반영:  입력으로 온 월 범위 내 기존 키 중, 새 데이터에 존재하지 않는 키는 제거
+        let calendar = Calendar.current
+        let incomingMonthStarts: Set<Date> = Set(transactionsByDay.keys.compactMap { calendar.dateInterval(of: .month, for: $0)?.start })
+        if !incomingMonthStarts.isEmpty {
+            let keysToRemove = self.transactionsByDay.keys.filter { key in
+                guard let mStart = calendar.dateInterval(of: .month, for: key)?.start else { return false }
+                return incomingMonthStarts.contains(mStart) && transactionsByDay[key] == nil
+            }
+            keysToRemove.forEach { self.transactionsByDay.removeValue(forKey: $0) }
         }
+
+        /// 2) 업데이트/추가 반영: 해당 키는 새 값으로 교체
+        self.transactionsByDay.merge(transactionsByDay) { _, new in new }
         self.calendarCollectionView.reloadData()
         // 선택된 날짜 또는 오늘 날짜에 대한 요약 갱신
         self.reloadSummaryList(for: self.resolveSelectedDate())
@@ -506,6 +518,10 @@ extension CalendarView {
                 guard let self else { return }
                 self.didTapDeleteTransaction.send((item.id, date))
             }
+            // 내역 상세
+            row.onTapRow = { [weak self] in
+                self?.didTapTransactionRow.send(item.id)
+            }
             self.summaryList.addArrangedSubview(row)
         }
         
@@ -532,6 +548,7 @@ extension CalendarView {
         case "gift": return "용돈"
         case "etc_inc": return "기타"
         case "uncat": return "미분류"
+            
         default: return id
         }
     }

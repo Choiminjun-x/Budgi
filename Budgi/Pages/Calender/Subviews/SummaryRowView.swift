@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class SummaryRowView: UIView {
     private let dotView = UIView()
@@ -13,8 +14,10 @@ final class SummaryRowView: UIView {
     private let memoLabel = UILabel()
     private let amountLabel = UILabel()
     private let deleteButton = UIButton(type: .system)
+    private let selectOverlayButton = UIButton(type: .custom)
     
     var onTapDelete: (() -> Void)?
+    var onTapRow: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -38,6 +41,7 @@ final class SummaryRowView: UIView {
             // 카테고리는 최대한 보이고, 메모가 먼저 잘리도록 함
             $0.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
+        
         self.memoLabel.do {
             $0.font = .systemFont(ofSize: 15, weight: .regular)
             $0.textColor = .tertiaryLabel
@@ -45,6 +49,7 @@ final class SummaryRowView: UIView {
             $0.lineBreakMode = .byTruncatingTail
             $0.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         }
+        
         self.amountLabel.do {
             $0.font = .systemFont(ofSize: 16, weight: .semibold)
             $0.textColor = .label
@@ -80,23 +85,32 @@ final class SummaryRowView: UIView {
         hStack.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(UIEdgeInsets(top: 14, left: 14, bottom: 14, right: 14))
         }
+
+        // 상위 레이어 투명 버튼: 삭제 버튼 영역은 제외하여 겹치지 않도록 처리
+        self.addSubview(selectOverlayButton)
+        self.selectOverlayButton.backgroundColor = .clear
+        self.selectOverlayButton.addTarget(self, action: #selector(didTapRow), for: .touchUpInside)
+        self.selectOverlayButton.snp.makeConstraints { make in
+            make.top.leading.bottom.equalToSuperview()
+            make.trailing.equalTo(self.deleteButton.snp.leading).offset(-8)
+        }
     }
     
     func configure(category: String, amountText: String, memo: String?, tint: UIColor) {
         self.dotView.backgroundColor = tint
         self.categoryLabel.text = category
-        if let memo, !memo.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            self.memoLabel.isHidden = false
-            self.memoLabel.text = memo
-        } else {
-            self.memoLabel.isHidden = true
-            self.memoLabel.text = nil
-        }
+        let trimmed = memo?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        self.memoLabel.isHidden = false
+        self.memoLabel.text = trimmed.isEmpty ? "" : trimmed
         self.amountLabel.text = amountText
         self.amountLabel.textColor = tint
     }
     
     @objc private func didTapDelete() {
         onTapDelete?()
+    }
+
+    @objc private func didTapRow() {
+        onTapRow?()
     }
 }
