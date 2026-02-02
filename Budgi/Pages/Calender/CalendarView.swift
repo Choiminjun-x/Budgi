@@ -88,6 +88,9 @@ enum CalendarViewModel {
 
 final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLogic {
     
+    private let calendarHeightRatio: CGFloat = 0.70
+
+    private var monthTotalContainerView: UIView!
     private let weekHeader = WeekHeaderView()
     private var calendarCollectionView: UICollectionView!
     
@@ -174,8 +177,8 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             $0.snp.makeConstraints {
                 $0.top.equalTo(self.weekHeader.snp.bottom).offset(4)
                 $0.leading.trailing.equalToSuperview()
-                // 6행 기준: 높이 = (width * 6/7)
-                $0.height.equalTo(self.snp.width).multipliedBy(6.0/7.0)
+                // 전체 캘린더 영역 높이(가로 대비 비율)
+                $0.height.equalTo(self.snp.width).multipliedBy(self.calendarHeightRatio)
             }
         }
         
@@ -252,19 +255,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     
     private func makeCalendarLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, environment in
-            let containerWidth = environment.container.effectiveContentSize.width
-            let itemLength = floor(containerWidth / 7) // 55
-            let itemSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0 / 7.0),
-                heightDimension: .fractionalHeight(1.0)
-            )
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
-            let rowGroupSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0),
-                heightDimension: .absolute(itemLength)
-            )
-            let rowGroup = NSCollectionLayoutGroup.horizontal(layoutSize: rowGroupSize, subitem: item, count: 7)
-            
+            // 섹션(월)별 일수에 따라 4/5/6행 계산
             let daysCount = self?.months.indices.contains(sectionIndex) == true ? self?.months[sectionIndex].count : 42
             let resolvedCount = daysCount ?? 42
             let rowCount: Int
@@ -275,6 +266,24 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             } else {
                 rowCount = 6
             }
+            
+            // 컬렉션뷰(컨테이너) 높이를 행 수로 나눠 셀 높이 산정
+            let containerHeight = environment.container.effectiveContentSize.height
+            let itemLength = floor(containerHeight / CGFloat(rowCount))
+            
+            // 가로 1/7, 세로는 행 높이
+            let itemSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0 / 7.0),
+                heightDimension: .fractionalHeight(1.0)
+            )
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            
+            let rowGroupSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .absolute(itemLength)
+            )
+            let rowGroup = NSCollectionLayoutGroup.horizontal(layoutSize: rowGroupSize, subitem: item, count: 7)
+            
             let monthGroupSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0),
                 heightDimension: .absolute(itemLength * CGFloat(rowCount))
@@ -282,7 +291,6 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             let monthGroup = NSCollectionLayoutGroup.vertical(layoutSize: monthGroupSize, subitem: rowGroup, count: rowCount)
             
             let section = NSCollectionLayoutSection(group: monthGroup)
-            
             return section
         }
         let config = UICollectionViewCompositionalLayoutConfiguration()
@@ -314,30 +322,30 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
         self.calendarCollectionView.reloadData()
         
         DispatchQueue.main.async {
-             let centerIndex = 2
-             let indexPath = IndexPath(item: 0, section: centerIndex)
-             self.calendarCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
-             self.updateMonthTitle(forPageIndex: centerIndex)
-             
-             // 초기 선택/요약: 오늘 날짜를 선택 상태로 표시하고 목록 업데이트
-             if self.months.indices.contains(centerIndex),
-                let todayIndex = self.months[centerIndex].firstIndex(where: { $0.isToday }) {
-                 let todayPath = IndexPath(item: todayIndex, section: centerIndex)
-                 self.selectedIndexPath = todayPath
-                 self.selectedDate = Calendar.current.startOfDay(for: self.months[centerIndex][todayIndex].date)
-                 self.calendarCollectionView.layoutIfNeeded()
-                 if let cell = self.calendarCollectionView.cellForItem(at: todayPath) as? DateCell {
-                     cell.displaySelectedStyle(true)
-                 } else {
-                     self.calendarCollectionView.reloadItems(at: [todayPath])
-                 }
-                 
-                 // 내역 업데이트
-                 let todayDate = self.months[centerIndex][todayIndex].date
-                 self.updateSummaryDayTitle(currentDate: todayDate)
-                 self.reloadSummaryList(for: todayDate)
-             }
-         }
+            let centerIndex = 2
+            let indexPath = IndexPath(item: 0, section: centerIndex)
+            self.calendarCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+            self.updateMonthTitle(forPageIndex: centerIndex)
+            
+            // 초기 선택/요약: 오늘 날짜를 선택 상태로 표시하고 목록 업데이트
+            if self.months.indices.contains(centerIndex),
+               let todayIndex = self.months[centerIndex].firstIndex(where: { $0.isToday }) {
+                let todayPath = IndexPath(item: todayIndex, section: centerIndex)
+                self.selectedIndexPath = todayPath
+                self.selectedDate = Calendar.current.startOfDay(for: self.months[centerIndex][todayIndex].date)
+                self.calendarCollectionView.layoutIfNeeded()
+                if let cell = self.calendarCollectionView.cellForItem(at: todayPath) as? DateCell {
+                    cell.displaySelectedStyle(true)
+                } else {
+                    self.calendarCollectionView.reloadItems(at: [todayPath])
+                }
+                
+                // 내역 업데이트
+                let todayDate = self.months[centerIndex][todayIndex].date
+                self.updateSummaryDayTitle(currentDate: todayDate)
+                self.reloadSummaryList(for: todayDate)
+            }
+        }
     }
     
     func displayPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [DayTransaction]]) {

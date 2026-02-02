@@ -33,7 +33,7 @@ final class WeekHeaderView: UIView {
             for (index, day) in days.enumerated() {
                 UILabel().do {
                     $0.text = day
-                    $0.font = .systemFont(ofSize: 13, weight: .medium)
+                    $0.font = .systemFont(ofSize: 10, weight: .medium)
                     $0.textAlignment = .center
                     $0.textColor = index == 0 ? .systemRed : (index == 6 ? .systemBlue : .secondaryLabel)
                     

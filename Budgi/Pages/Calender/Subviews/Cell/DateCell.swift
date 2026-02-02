@@ -61,7 +61,7 @@ class DateCell: UICollectionViewCell {
     func displayCellInfo(cellModel: DateCellModel) {
         let dayNumber = Calendar.current.component(.day, from: cellModel.day.date)
         self.dayLabel.text = "\(dayNumber)"
-        self.dayLabel.font = .systemFont(ofSize: 14, weight: cellModel.day.isToday ? .bold : .regular)
+        self.dayLabel.font = .systemFont(ofSize: 13, weight: cellModel.day.isToday ? .bold : .regular)
         
         let weekday = Calendar.current.component(.weekday, from: cellModel.day.date)
         if cellModel.day.isToday {
@@ -105,7 +105,7 @@ class DateCell: UICollectionViewCell {
                 $0.text = text
                 $0.textColor = isExpense ? .systemBlue : .systemRed
                 $0.textAlignment = .center
-                $0.font = .systemFont(ofSize: 11, weight: .regular)
+                $0.font = .systemFont(ofSize: 10, weight: .regular)
                 $0.setContentCompressionResistancePriority(.required, for: .vertical)
                 
                 self.transactionList.addArrangedSubview($0)
