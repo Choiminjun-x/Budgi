@@ -88,9 +88,12 @@ enum CalendarViewModel {
 
 final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLogic {
     
-    private let calendarHeightRatio: CGFloat = 0.70
+    private let calendarHeightRatio: CGFloat = 0.75
 
     private var monthTotalContainerView: UIView!
+    private var monthExpenseAmountLabel: UILabel! // 지출
+    private var monthIncomeAmountLabel: UILabel! // 수입
+    
     private let weekHeader = WeekHeaderView()
     private var calendarCollectionView: UICollectionView!
     
@@ -102,11 +105,11 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     private var summaryList: UIStackView!
     
     private var plusButton: UIButton!
-    
+
     private var months: [[CalendarDay]] = []
     private var monthBases: [Date] = [] // 각 섹션에 해당하는 월의 첫날들
     private var transactionsByDay: [Date: [DayTransaction]] = [:]
-    
+
     var centerSectionIndex: Int = 500
     
     var currentPage: Int = 2
@@ -155,10 +158,91 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     private func makeViewLayout() {
         self.backgroundColor = .white
         
+        // 월 수입/지출 합계 영역
+        self.monthTotalContainerView = UIView().do { container in
+            self.addSubview(container)
+            container.snp.makeConstraints {
+                $0.top.equalTo(self.safeAreaLayoutGuide.snp.top).offset(4)
+                $0.leading.trailing.equalToSuperview()
+                $0.height.equalTo(50)
+            }
+
+            let stack = UIStackView().do {
+                $0.axis = .horizontal
+                $0.alignment = .center
+                $0.distribution = .fillEqually
+                $0.spacing = 8
+                $0.isLayoutMarginsRelativeArrangement = true
+                $0.layoutMargins = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+            }
+            container.addSubview(stack)
+            stack.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+
+            // 수입
+            UIStackView().do { hStack in
+                hStack.axis = .horizontal
+                stack.addArrangedSubview(hStack)
+                
+                UILabel().do {
+                    $0.text = "수입"
+                    $0.font = .systemFont(ofSize: 12, weight: .regular)
+                    
+                    hStack.addArrangedSubview($0)
+                }
+                
+                self.monthIncomeAmountLabel = UILabel().do {
+                    $0.font = .systemFont(ofSize: 18, weight: .bold)
+                    $0.textColor = .systemRed // 수입: 빨강
+                    $0.text = "0원"
+                    $0.setContentHuggingPriority(.required, for: .horizontal)
+                    $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+                    
+                    hStack.addArrangedSubview($0)
+                }
+            }
+            
+            // 지출
+            UIStackView().do { hStack in
+                hStack.axis = .horizontal
+                
+                stack.addArrangedSubview(hStack)
+                
+                UILabel().do {
+                    $0.text = "지출"
+                    $0.font = .systemFont(ofSize: 12, weight: .regular)
+                    
+                    hStack.addArrangedSubview($0)
+                }
+                
+                self.monthExpenseAmountLabel = UILabel().do {
+                    $0.font = .systemFont(ofSize: 18, weight: .bold)
+                    $0.textColor = .systemBlue // 지출: 파랑
+                    $0.text = "0원"
+                    $0.setContentHuggingPriority(.required, for: .horizontal)
+                    $0.setContentCompressionResistancePriority(.required, for: .horizontal)
+                    
+                    hStack.addArrangedSubview($0)
+                }
+            }
+            
+            self.separateLine = UIView().do {
+                $0.backgroundColor = .separator
+                
+                container.addSubview($0)
+                $0.snp.makeConstraints {
+                    $0.bottom.equalToSuperview()
+                    $0.leading.trailing.equalToSuperview()
+                    $0.height.equalTo(2.0 / UIScreen.main.scale)
+                }
+            }
+        }
+        
         self.weekHeader.do {
             self.addSubview($0)
             $0.snp.makeConstraints {
-                $0.top.equalTo(self.safeAreaLayoutGuide.snp.top).offset(4)
+                $0.top.equalTo(self.monthTotalContainerView.snp.bottom).offset(4)
                 $0.leading.trailing.equalToSuperview()
                 $0.height.equalTo(24)
             }
@@ -326,6 +410,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             let indexPath = IndexPath(item: 0, section: centerIndex)
             self.calendarCollectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
             self.updateMonthTitle(forPageIndex: centerIndex)
+            self.updateMonthTotals(forPageIndex: centerIndex)
             
             // 초기 선택/요약: 오늘 날짜를 선택 상태로 표시하고 목록 업데이트
             if self.months.indices.contains(centerIndex),
@@ -374,6 +459,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 
                 self.currentPage += 1
                 self.updateMonthTitle(forPageIndex: self.currentPage)
+                self.updateMonthTotals(forPageIndex: self.currentPage)
                 // 섹션 인덱스가 시프트 되었으므로, 선택된 날짜 기준으로 선택 인덱스 재매핑
                 self.remapSelectionIndexPath()
                 
@@ -413,6 +499,8 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
         self.calendarCollectionView.reloadData()
         // 선택된 날짜 또는 오늘 날짜에 대한 요약 갱신
         self.reloadSummaryList(for: self.resolveSelectedDate())
+        // 현재 보이는 페이지 기준 월 합계 갱신
+        self.updateMonthTotals(forPageIndex: self.currentPageIndex())
     }
     
     func updateMonthTitle(forPageIndex pageIndex: Int) {
@@ -434,6 +522,38 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
         formatter.locale = Locale(identifier: "ko_KR")
         formatter.dateFormat = "yyyy년 MM월 dd일"
         self.summaryDayLabel.text = formatter.string(from: currentDate)
+    }
+
+    private func updateMonthTotals(forPageIndex pageIndex: Int) {
+        guard self.months.indices.contains(pageIndex),
+              let baseDate = self.months[pageIndex].first(where: { $0.isInCurrentMonth })?.date else {
+            self.monthIncomeAmountLabel?.text = "0원"
+            self.monthExpenseAmountLabel?.text = "0원"
+            return
+        }
+
+        let cal = Calendar.current
+        var income: Int64 = 0
+        var expense: Int64 = 0
+        for (day, items) in self.transactionsByDay {
+            if cal.isDate(day, equalTo: baseDate, toGranularity: .month) {
+                for item in items {
+                    if item.amount >= 0 {
+                        income += item.amount
+                    } else {
+                        expense += item.amount // 음수 합계 유지
+                    }
+                }
+            }
+        }
+
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        let incomeText = formatter.string(from: NSNumber(value: income)) ?? "0"
+        let expenseText = formatter.string(from: NSNumber(value: abs(expense))) ?? "0"
+
+        self.monthIncomeAmountLabel?.text = "+\(incomeText)원"
+        self.monthExpenseAmountLabel?.text = "-\(expenseText)원"
     }
 
     private func resolveSelectedDate() -> Date {
@@ -591,6 +711,8 @@ extension CalendarView: UIScrollViewDelegate {
         
         // ✅ 실제 보이는 페이지에 따라 제목 업데이트
         self.updateMonthTitle(forPageIndex: currentPage)
+        // ✅ 월 합계 업데이트
+        self.updateMonthTotals(forPageIndex: currentPage)
         
         // 🔁 안전한 조건에서만 확장
         if currentPage <= 1 {
