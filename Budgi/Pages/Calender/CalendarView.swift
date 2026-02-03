@@ -206,7 +206,6 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             // 지출
             UIStackView().do { hStack in
                 hStack.axis = .horizontal
-                
                 stack.addArrangedSubview(hStack)
                 
                 UILabel().do {

@@ -23,26 +23,43 @@ protocol TransactionInputViewDisplayLogic where Self: NSObject {
 
 enum TransactionInputViewModel {
     struct PageInfo {
-   
+        
     }
 }
 
-final class TransactionInputView: UIView, TransactionInputViewEventLogic, TransactionInputViewDisplayLogic {
+
+// MARK: - Category Model
+
+fileprivate struct Category: Hashable {
+    enum Kind { case expense, income }
     
+    let id: String
+    let name: String
+    let type: Kind
+}
+
+final class TransactionInputView: UIView, TransactionInputViewEventLogic, TransactionInputViewDisplayLogic {
+
+    private var amountTitleLabel: UILabel!
+    private var amountTextFieldContainer: UIView!
     private var amountTextField: UITextField!
     
+    private var typeTitleLabel: UILabel!
     private var typeButtonStackView: UIStackView!
     private var expenseButton: UIButton!
     private var incomeButton: UIButton!
     
+    private var categoryTitleLabel: UILabel!
     private var categoryCollectionView: UICollectionView!
     private var categoryCollectionHeight: Constraint?
-
+    
+    private var memoTitleLabel: UILabel!
     private var memoTextView: UITextView!
     private var memoPlaceholderLabel: UILabel!
     private var memoHeight: Constraint?
     
     private var saveButton: UIButton!
+    private var saveButtonBottom: Constraint?
     
     private var isExpenseSelected = true
     
@@ -99,41 +116,103 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
         self.categoryCollectionHeight?.update(offset: height)
     }
     
+    private func setupCategories() {
+        self.allExpenseCategories = [
+            Category(id: "food", name: "식비", type: .expense),
+            Category(id: "transport", name: "교통", type: .expense),
+            Category(id: "hobby", name: "취미", type: .expense),
+            Category(id: "shopping", name: "쇼핑", type: .expense),
+            Category(id: "life", name: "생활", type: .expense),
+            Category(id: "health", name: "의료", type: .expense),
+            Category(id: "etc_exp", name: "기타", type: .expense)
+        ]
+        self.allIncomeCategories = [
+            Category(id: "salary", name: "급여", type: .income),
+            Category(id: "bonus", name: "보너스", type: .income),
+            Category(id: "gift", name: "용돈", type: .income),
+            Category(id: "etc_inc", name: "기타", type: .income)
+        ]
+    }
     
-    // MARK: MakeViewLayout
+    
+    // MARK: makeViewLayout
     
     private func makeViewLayout() {
-        self.backgroundColor = .white
+        self.backgroundColor = .systemGroupedBackground
         
-        self.amountTextField = UITextField().do {
-            $0.placeholder = "0"
-            $0.keyboardType = .numberPad
-            $0.textAlignment = .right
-            $0.font = .systemFont(ofSize: 34, weight: .semibold)
-            $0.textColor = .label
-            $0.backgroundColor = .secondarySystemBackground
-            $0.layer.cornerRadius = 16
-            $0.layer.borderWidth = 1
-            $0.layer.borderColor = UIColor.separator.cgColor
-            $0.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 1))
-            $0.leftViewMode = .always
-            $0.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 1))
-            $0.rightViewMode = .always
+        self.amountTitleLabel = UILabel().do {
+            $0.text = "금액"
+            $0.font = .systemFont(ofSize: 13, weight: .regular)
+            $0.textColor = .secondaryLabel
             
             self.addSubview($0)
             $0.snp.makeConstraints {
-                $0.top.equalTo(self.safeAreaLayoutGuide.snp.top).offset(16)
+                $0.top.equalTo(self.safeAreaLayoutGuide.snp.top).offset(12)
                 $0.leading.trailing.equalToSuperview().inset(20)
-                $0.height.equalTo(88)
+            }
+        }
+        
+        self.amountTextFieldContainer = UIView().do { container in
+            container.backgroundColor = .secondarySystemGroupedBackground
+            container.layer.cornerRadius = 14
+            container.layer.borderWidth = 1
+            container.layer.borderColor = UIColor.separator.cgColor
+            
+            self.addSubview(container)
+            container.snp.makeConstraints {
+                $0.top.equalTo(self.amountTitleLabel.snp.bottom).offset(6)
+                $0.leading.trailing.equalToSuperview().inset(20)
+                $0.height.equalTo(72)
             }
             
-            $0.becomeFirstResponder()
+            let currencyLabel = UILabel().do {
+                $0.text = "₩"
+                $0.textColor = .secondaryLabel
+                $0.font = .systemFont(ofSize: 18, weight: .regular)
+                container.addSubview($0)
+                $0.snp.makeConstraints {
+                    $0.leading.equalToSuperview().inset(16)
+                    $0.centerY.equalToSuperview()
+                }
+            }
+            
+            self.amountTextField = UITextField().do {
+                $0.placeholder = "0"
+                $0.keyboardType = .numberPad
+                $0.textAlignment = .right
+                let base = UIFont.systemFont(ofSize: 34, weight: .semibold)
+                $0.font = UIFont.monospacedDigitSystemFont(ofSize: base.pointSize, weight: .semibold)
+                $0.textColor = .label
+                $0.backgroundColor = .clear
+                $0.borderStyle = .none
+                $0.addTarget(self, action: #selector(self.amountEditingChanged), for: .editingChanged)
+                
+                container.addSubview($0)
+                $0.snp.makeConstraints {
+                    $0.leading.greaterThanOrEqualTo(currencyLabel.snp.trailing).offset(8)
+                    $0.trailing.equalToSuperview().inset(16)
+                    $0.centerY.equalToSuperview()
+                }
+                
+                $0.becomeFirstResponder()
+            }
+        }
+        
+        self.typeTitleLabel = UILabel().do {
+            $0.text = "유형"
+            $0.font = .systemFont(ofSize: 13, weight: .regular)
+            $0.textColor = .secondaryLabel
+            self.addSubview($0)
+            $0.snp.makeConstraints {
+                $0.top.equalTo(self.amountTextFieldContainer.snp.bottom).offset(14)
+                $0.leading.trailing.equalToSuperview().inset(20)
+            }
         }
         
         self.expenseButton = UIButton(type: .system).do {
             $0.setTitle("지출", for: .normal)
             $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-            $0.backgroundColor = .systemGray6
+            $0.backgroundColor = .tertiarySystemFill
             $0.setTitleColor(.label, for: .normal)
             $0.layer.cornerRadius = 12
         }
@@ -141,7 +220,7 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
         self.incomeButton = UIButton(type: .system).do {
             $0.setTitle("수입", for: .normal)
             $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-            $0.backgroundColor = .systemGray6
+            $0.backgroundColor = .tertiarySystemFill
             $0.setTitleColor(.label, for: .normal)
             $0.layer.cornerRadius = 12
         }
@@ -153,13 +232,12 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
             
             self.addSubview($0)
             $0.snp.makeConstraints {
-                $0.top.equalTo(self.amountTextField.snp.bottom).offset(12)
+                $0.top.equalTo(self.typeTitleLabel.snp.bottom).offset(6)
                 $0.leading.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(48)
             }
         }
-
-        // Category chips collection view (horizontal)
+   
         let layout = UICollectionViewFlowLayout().do {
             $0.scrollDirection = .vertical
             $0.minimumLineSpacing = 8
@@ -167,44 +245,65 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
             $0.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
             $0.sectionInset = .zero
         }
+        self.categoryTitleLabel = UILabel().do {
+            $0.text = "카테고리"
+            $0.font = .systemFont(ofSize: 13, weight: .regular)
+            $0.textColor = .secondaryLabel
+            self.addSubview($0)
+            $0.snp.makeConstraints {
+                $0.top.equalTo(self.typeButtonStackView.snp.bottom).offset(14)
+                $0.leading.trailing.equalToSuperview().inset(20)
+            }
+        }
+        
         self.categoryCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout).do {
             $0.backgroundColor = .clear
             $0.showsVerticalScrollIndicator = false
             $0.isScrollEnabled = false
             $0.contentInset = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 20)
-            $0.register(CategoryChipCell.self, forCellWithReuseIdentifier: CategoryChipCell.reuseId)
+            $0.register(CategoryChipCell.self, forCellWithReuseIdentifier: CategoryChipCell.reusableId)
             $0.dataSource = self
             $0.delegate = self
             $0.allowsMultipleSelection = false
             
             self.addSubview($0)
             $0.snp.makeConstraints {
-                $0.top.equalTo(self.typeButtonStackView.snp.bottom).offset(8)
+                $0.top.equalTo(self.categoryTitleLabel.snp.bottom).offset(6)
                 $0.leading.trailing.equalToSuperview()
                 self.categoryCollectionHeight = $0.height.equalTo(44).priority(.high).constraint
             }
         }
-
-        // Memo TextView (inline, auto-resizing between 44~120)
+        
+        self.memoTitleLabel = UILabel().do {
+            $0.text = "메모"
+            $0.font = .systemFont(ofSize: 13, weight: .regular)
+            $0.textColor = .secondaryLabel
+            self.addSubview($0)
+            $0.snp.makeConstraints {
+                $0.top.equalTo(self.categoryCollectionView.snp.bottom).offset(14)
+                $0.leading.trailing.equalToSuperview().inset(20)
+            }
+        }
+        
         self.memoTextView = UITextView().do {
             $0.font = .systemFont(ofSize: 16)
             $0.textColor = .label
-            $0.backgroundColor = .secondarySystemBackground
-            $0.layer.cornerRadius = 12
+            $0.backgroundColor = .tertiarySystemGroupedBackground
+            $0.layer.cornerRadius = 10
             $0.layer.borderWidth = 1
             $0.layer.borderColor = UIColor.separator.cgColor
             $0.textContainerInset = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
             $0.isScrollEnabled = false
             $0.delegate = self
-
+            
             self.addSubview($0)
             $0.snp.makeConstraints {
-                $0.top.equalTo(self.categoryCollectionView.snp.bottom).offset(12)
+                $0.top.equalTo(self.memoTitleLabel.snp.bottom).offset(6)
                 $0.leading.trailing.equalToSuperview().inset(20)
                 self.memoHeight = $0.height.equalTo(44).priority(.high).constraint
             }
         }
-
+        
         self.memoPlaceholderLabel = UILabel().do {
             $0.text = "메모(선택)"
             $0.textColor = .placeholderText
@@ -233,7 +332,7 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
     }
     
     
-    // MARK: MakeViewEvents
+    // MARK: makeEvents
     
     private func makeEvents() {
         self.expenseButton.do {
@@ -289,11 +388,10 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
         let incomeSelected = !isExpense
         self.incomeButton.backgroundColor = incomeSelected ? selectedColor : deselectedColor
         self.incomeButton.setTitleColor(incomeSelected ? selectedTitleColor : deselectedTitleColor, for: .normal)
-
-        // Update categories for selected type
+        
         self.categories = isExpense ? self.allExpenseCategories : self.allIncomeCategories
         self.categoryCollectionView.reloadData()
-        // Select first item by default if available
+        
         if let first = self.categories.first {
             self.selectedCategoryId = first.id
             let indexPath = IndexPath(item: 0, section: 0)
@@ -301,22 +399,27 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
         } else {
             self.selectedCategoryId = nil
         }
-        // Update height after layout
+    
         DispatchQueue.main.async { [weak self] in
             self?.updateCategoryCollectionHeight()
         }
+        
+        self.updateSaveButtonState()
     }
-}
-
-
-// MARK: - Category Model
-
-fileprivate struct Category: Hashable {
-    enum Kind { case expense, income }
     
-    let id: String
-    let name: String
-    let kind: Kind
+    private func updateSaveButtonState() {
+        let rawAmount = Int64(self.amountTextField.text ?? "0") ?? 0
+        let enabled = rawAmount > 0
+        self.saveButton.isEnabled = enabled
+        UIView.animate(withDuration: 0.2) {
+            self.saveButton.backgroundColor = enabled ? .systemBlue : .systemGray4
+        }
+    }
+    
+    @objc private func amountEditingChanged() {
+        self.amountTextField.layer.borderColor = UIColor.separator.cgColor
+        self.updateSaveButtonState()
+    }
 }
 
 
@@ -324,38 +427,19 @@ fileprivate struct Category: Hashable {
 
 extension TransactionInputView: UICollectionViewDataSource, UICollectionViewDelegate {
     
-    private func setupCategories() {
-        self.allExpenseCategories = [
-            Category(id: "food", name: "식비", kind: .expense),
-            Category(id: "transport", name: "교통", kind: .expense),
-            Category(id: "hobby", name: "취미", kind: .expense),
-            Category(id: "shopping", name: "쇼핑", kind: .expense),
-            Category(id: "life", name: "생활", kind: .expense),
-            Category(id: "health", name: "의료", kind: .expense),
-            Category(id: "etc_exp", name: "기타", kind: .expense)
-        ]
-        self.allIncomeCategories = [
-            Category(id: "salary", name: "급여", kind: .income),
-            Category(id: "bonus", name: "보너스", kind: .income),
-            Category(id: "gift", name: "용돈", kind: .income),
-            Category(id: "etc_inc", name: "기타", kind: .income)
-        ]
-    }
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.categories.count
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let category = self.categories[indexPath.item]
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryChipCell.reuseId, for: indexPath) as! CategoryChipCell
-        cell.configure(title: category.name)
-        // Apply selection state
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CategoryChipCell.reusableId, for: indexPath) as! CategoryChipCell
+        cell.displayCell(title: category.name)
         let isSelected = category.id == self.selectedCategoryId
         cell.isSelected = isSelected
         return cell
     }
-
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let category = self.categories[indexPath.item]
         self.selectedCategoryId = category.id
@@ -366,6 +450,7 @@ extension TransactionInputView: UICollectionViewDataSource, UICollectionViewDele
 // MARK: - UITextViewDelegate
 
 extension TransactionInputView: UITextViewDelegate {
+    
     func textViewDidChange(_ textView: UITextView) {
         self.memoPlaceholderLabel.isHidden = !textView.text.isEmpty
         let targetWidth = textView.bounds.width

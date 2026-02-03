@@ -9,8 +9,6 @@ import Foundation
 import RIBs
 
 protocol TransactionInputRouting: ViewableRouting {
-    //    func attachTodoListDetail()
-    //    func detachTodoListDetail()
 }
 
 protocol TransactionInputPresentable: Presentable {
@@ -47,7 +45,6 @@ class TransactionInputInteractor: PresentableInteractor<TransactionInputPresenta
         self.presenter.presentPageInfo(self.selectedDate)
     }
 
-    // 저장 버튼
     func didTapSaveButton(amount: Int64, categoryId: String?, memo: String?) {
         /// 1. 생성 - context에 자동 등록
         let transaction = Transaction(context: CoreDataManager.shared.context)
@@ -67,7 +64,6 @@ class TransactionInputInteractor: PresentableInteractor<TransactionInputPresenta
         self.didTapClose()
     }
     
-    // 닫기 버튼
     func didTapClose() {
         self.listener?.transactionInputDidClose()
     }

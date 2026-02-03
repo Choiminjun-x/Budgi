@@ -23,7 +23,7 @@ public protocol TransactionInputBuildable: Buildable {
 class TransactionInputBuilder: Builder<TransactionInputDependency>, TransactionInputBuildable {
     
     public override init(dependency: TransactionInputDependency) {
-      super.init(dependency: dependency)
+        super.init(dependency: dependency)
     }
     
     public func build(withListener listener: TransactionInputListener, selectedDate: Date) -> ViewableRouting {
@@ -33,6 +33,6 @@ class TransactionInputBuilder: Builder<TransactionInputDependency>, TransactionI
         interactor.listener = listener
         
         return TransactionInputRouter(interactor: interactor,
-                              viewController: viewController)
+                                      viewController: viewController)
     }
 }

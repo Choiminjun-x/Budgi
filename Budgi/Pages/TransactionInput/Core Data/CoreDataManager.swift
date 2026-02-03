@@ -44,11 +44,11 @@ extension CoreDataManager {
               let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth) else {
             return []
         }
-
+        
         let request: NSFetchRequest<Transaction> = Transaction.fetchRequest()
         request.predicate = NSPredicate(format: "date >= %@ AND date < %@", startOfMonth as NSDate, endOfMonth as NSDate)
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-
+        
         do {
             return try context.fetch(request)
         } catch {
@@ -69,7 +69,7 @@ extension CoreDataManager {
             return nil
         }
     }
-
+    
     
     /// id로 단건 삭제
     @discardableResult
@@ -93,13 +93,13 @@ extension CoreDataManager {
     func deleteTransactions(for date: Date) {
         let context = CoreDataManager.shared.context
         let request: NSFetchRequest<Transaction> = Transaction.fetchRequest()
-
+        
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: date)
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
-
+        
         request.predicate = NSPredicate(format: "date >= %@ AND date < %@", startOfDay as NSDate, endOfDay as NSDate)
-
+        
         do {
             let results = try context.fetch(request)
             for transaction in results {
