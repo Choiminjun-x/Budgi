@@ -9,7 +9,7 @@ import Foundation
 import RIBs
 
 protocol TransactionDetailDependency: Dependency {
-
+    
 }
 
 final class TransactionDetailComponent: Component<TransactionDetailDependency> {
@@ -23,7 +23,7 @@ public protocol TransactionDetailBuildable: Buildable {
 class TransactionDetailBuilder: Builder<TransactionDetailDependency>, TransactionDetailBuildable {
     
     public override init(dependency: TransactionDetailDependency) {
-      super.init(dependency: dependency)
+        super.init(dependency: dependency)
     }
     
     public func build(withListener listener: TransactionDetailListener, transactionId: UUID) -> ViewableRouting {
@@ -33,6 +33,6 @@ class TransactionDetailBuilder: Builder<TransactionDetailDependency>, Transactio
         interactor.listener = listener
         
         return TransactionDetailRouter(interactor: interactor,
-                              viewController: viewController)
+                                       viewController: viewController)
     }
 }

@@ -5,21 +5,21 @@
 //  Created by 최민준(Minjun Choi) on 1/28/26.
 //
 
-import UIKit
 import SnapKit
+import UIKit
 
 // MARK: ViewEventLogic
 
-protocol TransactionDetailViewEventLogic { }
+protocol TransactionDetailViewEventLogic {}
 
 // MARK: ViewDisplayLogic
 
 protocol TransactionDetailViewDisplayLogic where Self: NSObject {
-    func displayDetail(_ model: TransactionDetailViewModel.Detail)
+    func displayPageInfo(_ model: TransactionDetailViewModel.PageInfo)
 }
 
 enum TransactionDetailViewModel {
-    struct Detail {
+    struct PageInfo {
         let categoryName: String
         let amountText: String
         let amountTint: UIColor
@@ -28,13 +28,15 @@ enum TransactionDetailViewModel {
     }
 }
 
-final class TransactionDetailView: UIView, TransactionDetailViewEventLogic, TransactionDetailViewDisplayLogic {
+final class TransactionDetailView: UIView, TransactionDetailViewEventLogic,
+                                   TransactionDetailViewDisplayLogic
+{
     
-    private let amountLabel = UILabel()
-    private let categoryLabel = UILabel()
-    private let dateLabel = UILabel()
-    private let memoTitleLabel = UILabel()
-    private let memoLabel = UILabel()
+    private var amountLabel: UILabel!
+    private var categoryLabel: UILabel!
+    private var dateLabel: UILabel!
+    private var memoTitleLabel: UILabel!
+    private var memoLabel: UILabel!
     
     // MARK: instantiate
     
@@ -57,53 +59,70 @@ final class TransactionDetailView: UIView, TransactionDetailViewEventLogic, Tran
         return TransactionDetailView()
     }
     
-    // MARK: MakeViewLayout
+    // MARK: makeViewLayout
     
     private func makeViewLayout() {
         self.backgroundColor = .systemBackground
         
-        self.amountLabel.do {
+        self.amountLabel = UILabel().do {
             $0.font = .systemFont(ofSize: 34, weight: .bold)
             $0.textColor = .label
             $0.textAlignment = .left
-            $0.setContentCompressionResistancePriority(.required, for: .vertical)
+            $0.setContentCompressionResistancePriority(
+                .required,
+                for: .vertical
+            )
         }
         
-        self.categoryLabel.do {
+        self.categoryLabel = UILabel().do {
             $0.font = .systemFont(ofSize: 16, weight: .semibold)
             $0.textColor = .secondaryLabel
             $0.numberOfLines = 1
         }
         
-        self.dateLabel.do {
+        self.dateLabel = UILabel().do {
             $0.font = .systemFont(ofSize: 15, weight: .regular)
             $0.textColor = .tertiaryLabel
             $0.numberOfLines = 1
         }
         
-        self.memoTitleLabel.do {
+        self.memoTitleLabel = UILabel().do {
             $0.text = "메모"
             $0.font = .systemFont(ofSize: 15, weight: .semibold)
             $0.textColor = .secondaryLabel
         }
         
-        self.memoLabel.do {
+        self.memoLabel = UILabel().do {
             $0.font = .systemFont(ofSize: 16, weight: .regular)
             $0.textColor = .label
             $0.numberOfLines = 0
         }
         
-        let topStack = UIStackView(arrangedSubviews: [amountLabel, categoryLabel, dateLabel])
+        let topStack = UIStackView(arrangedSubviews: [
+            self.amountLabel, self.categoryLabel, self.dateLabel,
+        ])
         topStack.axis = .vertical
         topStack.spacing = 6
         topStack.isLayoutMarginsRelativeArrangement = true
-        topStack.layoutMargins = UIEdgeInsets(top: 20, left: 20, bottom: 12, right: 20)
+        topStack.layoutMargins = UIEdgeInsets(
+            top: 20,
+            left: 20,
+            bottom: 12,
+            right: 20
+        )
         
-        let memoStack = UIStackView(arrangedSubviews: [memoTitleLabel, memoLabel])
+        let memoStack = UIStackView(arrangedSubviews: [
+            memoTitleLabel, memoLabel,
+        ])
         memoStack.axis = .vertical
         memoStack.spacing = 8
         memoStack.isLayoutMarginsRelativeArrangement = true
-        memoStack.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        memoStack.layoutMargins = UIEdgeInsets(
+            top: 16,
+            left: 16,
+            bottom: 16,
+            right: 16
+        )
         memoStack.backgroundColor = .secondarySystemBackground
         memoStack.layer.cornerRadius = 12
         
@@ -119,14 +138,16 @@ final class TransactionDetailView: UIView, TransactionDetailViewEventLogic, Tran
     }
     
     
-    // MARK: MakeViewEvents
+    // MARK: makeEvents
     
     private func makeEvents() {
         
     }
     
-    // MARK: Display
-    func displayDetail(_ model: TransactionDetailViewModel.Detail) {
+    
+    // MARK: displayPageInfo
+    
+    func displayPageInfo(_ model: TransactionDetailViewModel.PageInfo) {
         self.amountLabel.text = model.amountText
         self.amountLabel.textColor = model.amountTint
         self.categoryLabel.text = model.categoryName

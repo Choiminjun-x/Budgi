@@ -13,10 +13,11 @@ protocol AppRootDependency: Dependency {
     // created by this RIB.
 }
 
-final class AppRootComponent: Component<AppRootDependency>, SettingDependency, CalendarDependency {
+final class AppRootComponent: Component<AppRootDependency>, CalendarDependency, SettingDependency {
     // Shared app-level dependencies
     let dateGenerator: DateGenerator = CalendarDateGenerator()
 }
+
 
 // MARK: - Builder
 

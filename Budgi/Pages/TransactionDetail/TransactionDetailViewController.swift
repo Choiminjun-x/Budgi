@@ -11,7 +11,7 @@ import RIBs
 
 protocol TransactionDetailPresentableListener: AnyObject {
     func requestPageInfo()
-
+    
     func didTapClose()
 }
 
@@ -80,7 +80,25 @@ final class TransactionDetailViewController: UIViewController, TransactionDetail
 // MARK: - Presentable
 
 extension TransactionDetailViewController: TransactionDetailPresentable {
-    func presentDetail(_ info: TransactionDetailViewModel.Detail) {
-        self.viewDisplayLogic.displayDetail(info)
+    
+    func presentPageInfo(_ transaction: Transaction) {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        let text = formatter.string(from: NSNumber(value: abs(transaction.amount))) ?? "0"
+        let amountText = (transaction.amount < 0 ? "-" : "+") + text
+        let tint: UIColor = transaction.amount < 0 ? .systemBlue : .systemRed
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        dateFormatter.dateFormat = "yyyy년 MM월 dd일"
+        let dateText = transaction.date.map { dateFormatter.string(from: $0) } ?? ""
+        let info = TransactionDetailViewModel.PageInfo(
+            categoryName: CategoryType.getCategoryType(for: transaction.categoryId).rawValue,
+            amountText: amountText,
+            amountTint: tint,
+            dateText: dateText,
+            memoText: transaction.memo
+        )
+        
+        self.viewDisplayLogic.displayPageInfo(info)
     }
 }

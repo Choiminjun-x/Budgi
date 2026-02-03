@@ -10,13 +10,11 @@ import UIKit
 import RIBs
 
 protocol TransactionDetailRouting: ViewableRouting {
-    //    func attachTodoListDetail()
-    //    func detachTodoListDetail()
 }
 
 protocol TransactionDetailPresentable: Presentable {
     var listener: TransactionDetailPresentableListener? { get set }
-    func presentDetail(_ info: TransactionDetailViewModel.Detail)
+    func presentPageInfo(_ transaction: Transaction)
 }
 
 public protocol TransactionDetailListener: AnyObject {
@@ -42,27 +40,13 @@ class TransactionDetailInteractor: PresentableInteractor<TransactionDetailPresen
     }
     
     func requestPageInfo() {
-        guard let tx = CoreDataManager.shared.fetchTransaction(id: transactionId) else { return }
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        let text = formatter.string(from: NSNumber(value: abs(tx.amount))) ?? "0"
-        let amountText = (tx.amount < 0 ? "-" : "+") + text
-        let tint: UIColor = tx.amount < 0 ? .systemBlue : .systemRed
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        dateFormatter.dateFormat = "yyyy년 MM월 dd일"
-        let dateText = tx.date.map { dateFormatter.string(from: $0) } ?? ""
-        let info = TransactionDetailViewModel.Detail(
-            categoryName: CategoryType.getCategoryType(for: tx.categoryId).rawValue,
-            amountText: amountText,
-            amountTint: tint,
-            dateText: dateText,
-            memoText: tx.memo
-        )
-        self.presenter.presentDetail(info)
+        guard let transaction = CoreDataManager.shared.fetchTransaction(id: transactionId) else {
+            return
+        }
+        
+        self.presenter.presentPageInfo(transaction)
     }
     
-    // 닫기 버튼
     func didTapClose() {
         self.listener?.transactionDetailDidClose()
     }

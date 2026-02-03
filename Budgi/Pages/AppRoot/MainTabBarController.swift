@@ -18,7 +18,7 @@ class MainTabBarController: UITabBarController, AppRootViewControllable, AppRoot
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.makeViewLayout()
     }
     

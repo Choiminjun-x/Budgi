@@ -63,7 +63,7 @@ final class AppRootRouter: LaunchRouter<AppRootInteractable, AppRootViewControll
         settingNavi.navigationBar.scrollEdgeAppearance = settingTapAppearance
         settingNavi.navigationBar.compactAppearance = settingTapAppearance
         settingNavi.navigationBar.tintColor = .white
-
+        
         let viewControllers = [
             calendarNavi,
             settingNavi
