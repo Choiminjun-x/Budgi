@@ -82,7 +82,7 @@ final class CalendarViewController: UIViewController, CalendarViewControllable {
             $0.didTapDeleteTransaction.sink { [weak self] (id, date) in
                 self?.listener?.didTapDeleteTransaction(id: id, date: date)
             }.store(in: &cancellables)
-
+            
             $0.didTapTransactionRow.sink { [weak self] id in
                 self?.listener?.didTapTransactionDetail(id: id)
             }.store(in: &cancellables)

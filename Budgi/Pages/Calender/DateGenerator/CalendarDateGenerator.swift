@@ -7,15 +7,6 @@
 
 import Foundation
 
-struct CalendarDay {
-    let date: Date
-    let isInCurrentMonth: Bool
-    
-    var isToday: Bool {
-        Calendar.current.isDateInToday(date)
-    }
-}
-
 protocol DateGenerator {
     // generate - Network, DB 요청 X
     func generateMonthDays(for date: Date) -> [CalendarDay]
@@ -24,8 +15,9 @@ protocol DateGenerator {
 final class CalendarDateGenerator: DateGenerator {
     
     private let calendar = Calendar.current
-   
+    
     func generateMonthDays(for date: Date) -> [CalendarDay] {
+        /// 해당 날짜(date)의 월 전체 범위 (1일~말일)를 구함
         guard let monthInterval = calendar.dateInterval(of: .month, for: date),
               let firstWeekday = calendar.dateComponents([.weekday], from: monthInterval.start).weekday else {
             return []
@@ -33,7 +25,7 @@ final class CalendarDateGenerator: DateGenerator {
         
         var days: [CalendarDay] = []
         
-        // 이전 달의 일부 날짜 채우기
+        /// 이전 달 날짜 채우기 (월 시작 요일에 맞추기 위해 앞쪽 공백 채움)
         let previousDaysCount = (firstWeekday - calendar.firstWeekday + 7) % 7
         for i in stride(from: previousDaysCount, to: 0, by: -1) {
             if let date = calendar.date(byAdding: .day, value: -i, to: monthInterval.start) {
@@ -41,7 +33,7 @@ final class CalendarDateGenerator: DateGenerator {
             }
         }
         
-        // 이번 달 날짜 채우기
+        /// 이번 달 날짜 채우기
         var currentDate = monthInterval.start
         while currentDate < monthInterval.end {
             days.append(CalendarDay(date: currentDate, isInCurrentMonth: true))
@@ -49,21 +41,22 @@ final class CalendarDateGenerator: DateGenerator {
             currentDate = nextDay
         }
         
+        /// 행 수 계산: 1주 = 7일 → 총 날짜 수에 따라 4~6줄 중 결정
         let rowCount = Int(ceil(Double(days.count) / 7.0))
+        
+        /// 4행은 그대로, 그 이상은 주 * 7
         let targetCount: Int?
         if rowCount <= 4 {
-            targetCount = nil
-        } else if rowCount <= 5 {
-            targetCount = 35
+            targetCount = nil // 4줄이면 padding 불필요
         } else {
-            targetCount = 42
+            targetCount = rowCount * 7
         }
         
-        // 다음 달의 일부 날짜 채우기 (5행/6행 맞추기 위해, 4행이면 채우지 않음)
+        /// 다음 달의 일부 날짜 채우기 (5행/6행 맞추기 위해, 4행이면 채우지 않음)
         if let targetCount {
             while days.count < targetCount {
                 days.append(CalendarDay(date: currentDate, isInCurrentMonth: false))
-                if let next = calendar.date(byAdding: .day, value: 1, to: currentDate) {
+                if let next = calendar.date(byAdding: .day, value: 1, to: currentDate) { // 날짜를 하루씩 증가시키며 순회
                     currentDate = next
                 } else {
                     break

@@ -27,17 +27,6 @@ enum TransactionInputViewModel {
     }
 }
 
-
-// MARK: - Category Model
-
-fileprivate struct Category: Hashable {
-    enum Kind { case expense, income }
-    
-    let id: String
-    let name: String
-    let type: Kind
-}
-
 final class TransactionInputView: UIView, TransactionInputViewEventLogic, TransactionInputViewDisplayLogic {
 
     private var amountTitleLabel: UILabel!
@@ -118,19 +107,20 @@ final class TransactionInputView: UIView, TransactionInputViewEventLogic, Transa
     
     private func setupCategories() {
         self.allExpenseCategories = [
-            Category(id: "food", name: "식비", type: .expense),
-            Category(id: "transport", name: "교통", type: .expense),
-            Category(id: "hobby", name: "취미", type: .expense),
-            Category(id: "shopping", name: "쇼핑", type: .expense),
-            Category(id: "life", name: "생활", type: .expense),
-            Category(id: "health", name: "의료", type: .expense),
-            Category(id: "etc_exp", name: "기타", type: .expense)
+            Category(id: "food", type: .expense),
+            Category(id: "transport", type: .expense),
+            Category(id: "hobby", type: .expense),
+            Category(id: "shopping", type: .expense),
+            Category(id: "life", type: .expense),
+            Category(id: "health", type: .expense),
+            Category(id: "etc_exp", type: .expense)
         ]
+        
         self.allIncomeCategories = [
-            Category(id: "salary", name: "급여", type: .income),
-            Category(id: "bonus", name: "보너스", type: .income),
-            Category(id: "gift", name: "용돈", type: .income),
-            Category(id: "etc_inc", name: "기타", type: .income)
+            Category(id: "salary", type: .income),
+            Category(id: "bonus", type: .income),
+            Category(id: "gift", type: .income),
+            Category(id: "etc_inc", type: .income)
         ]
     }
     

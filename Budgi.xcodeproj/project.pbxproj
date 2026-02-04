@@ -15,6 +15,10 @@
 		3E543E3A2F29C71B00C7E7E0 /* TransactionDetailRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E543E392F29C71B00C7E7E0 /* TransactionDetailRouter.swift */; };
 		3EAB4BD02F283805006CB41D /* CategoryChipCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EAB4BCF2F283805006CB41D /* CategoryChipCell.swift */; };
 		3EAB4BD22F286445006CB41D /* SummaryRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EAB4BD12F286445006CB41D /* SummaryRowView.swift */; };
+		3EC308712F31C5CB00F60CD3 /* CategoryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EC308702F31C5CB00F60CD3 /* CategoryType.swift */; };
+		3EC308732F31C5EA00F60CD3 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EC308722F31C5EA00F60CD3 /* Category.swift */; };
+		3EC308762F31C63C00F60CD3 /* CalendarDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EC308752F31C63C00F60CD3 /* CalendarDay.swift */; };
+		3EC308782F31C64B00F60CD3 /* DayTransaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3EC308772F31C64B00F60CD3 /* DayTransaction.swift */; };
 		B00683332F247189008D77EA /* TransactionInputBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00683322F247189008D77EA /* TransactionInputBuilder.swift */; };
 		B00683352F247199008D77EA /* TransactionInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00683342F247199008D77EA /* TransactionInputView.swift */; };
 		B00683372F2471A9008D77EA /* TransactionInputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B00683362F2471A9008D77EA /* TransactionInputViewController.swift */; };
@@ -81,6 +85,10 @@
 		3E543E392F29C71B00C7E7E0 /* TransactionDetailRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailRouter.swift; sourceTree = "<group>"; };
 		3EAB4BCF2F283805006CB41D /* CategoryChipCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryChipCell.swift; sourceTree = "<group>"; };
 		3EAB4BD12F286445006CB41D /* SummaryRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryRowView.swift; sourceTree = "<group>"; };
+		3EC308702F31C5CB00F60CD3 /* CategoryType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryType.swift; sourceTree = "<group>"; };
+		3EC308722F31C5EA00F60CD3 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
+		3EC308752F31C63C00F60CD3 /* CalendarDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarDay.swift; sourceTree = "<group>"; };
+		3EC308772F31C64B00F60CD3 /* DayTransaction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayTransaction.swift; sourceTree = "<group>"; };
 		564C58518BCEADFB1509CCE9 /* Pods-BudgiTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BudgiTests.debug.xcconfig"; path = "Target Support Files/Pods-BudgiTests/Pods-BudgiTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6BBA494F92B2ED2C0D3E9DBF /* Pods_Budgi.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Budgi.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		916183B809334A38AD587663 /* Pods_BudgiTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BudgiTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -198,6 +206,17 @@
 				B0D750AD2F277A7F00CFE69E /* TransactionDataModel.xcdatamodeld */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		3EC308742F31C60800F60CD3 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				3EC308702F31C5CB00F60CD3 /* CategoryType.swift */,
+				3EC308722F31C5EA00F60CD3 /* Category.swift */,
+				3EC308752F31C63C00F60CD3 /* CalendarDay.swift */,
+				3EC308772F31C64B00F60CD3 /* DayTransaction.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		707EFDCC713172A212835894 /* Frameworks */ = {
@@ -358,6 +377,7 @@
 			isa = PBXGroup;
 			children = (
 				B0D750CF2F279ACF00CFE69E /* DateGenerator */,
+				3EC308742F31C60800F60CD3 /* Models */,
 				B09F4A8E2F2248AE00411130 /* Subviews */,
 				B09F4A8F2F2248AE00411130 /* CalendarBuilder.swift */,
 				B09F4A932F2248AE00411130 /* CalendarView.swift */,
@@ -664,16 +684,20 @@
 				B09F4AA62F2248AE00411130 /* SettingRouter.swift in Sources */,
 				B09F4AA72F2248AE00411130 /* CalendarBuilder.swift in Sources */,
 				B09F4AA82F2248AE00411130 /* CalendarInteractor.swift in Sources */,
+				3EC308762F31C63C00F60CD3 /* CalendarDay.swift in Sources */,
 				B00683332F247189008D77EA /* TransactionInputBuilder.swift in Sources */,
 				B09F4AA92F2248AE00411130 /* DateCell.swift in Sources */,
 				3EAB4BD02F283805006CB41D /* CategoryChipCell.swift in Sources */,
 				B09F4AAA2F2248AE00411130 /* MainTabBarController.swift in Sources */,
+				3EC308782F31C64B00F60CD3 /* DayTransaction.swift in Sources */,
 				B09F4AAB2F2248AE00411130 /* SettingBuilder.swift in Sources */,
 				3E543E382F29C71300C7E7E0 /* TransactionDetailInteractor.swift in Sources */,
 				B09F4AAC2F2248AE00411130 /* AppRootBuilder.swift in Sources */,
 				B00683392F2471B2008D77EA /* TransactionInputInteractor.swift in Sources */,
 				B09F4AAD2F2248AE00411130 /* CalendarViewController.swift in Sources */,
+				3EC308712F31C5CB00F60CD3 /* CategoryType.swift in Sources */,
 				B09F4A822F2247CE00411130 /* UICollectionView+Extension.swift in Sources */,
+				3EC308732F31C5EA00F60CD3 /* Category.swift in Sources */,
 				3E543E3A2F29C71B00C7E7E0 /* TransactionDetailRouter.swift in Sources */,
 				B006833B2F2471B8008D77EA /* TransactionInputRouter.swift in Sources */,
 				B00683352F247199008D77EA /* TransactionInputView.swift in Sources */,

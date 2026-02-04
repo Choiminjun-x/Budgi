@@ -9,51 +9,6 @@ import UIKit
 import Combine
 import SnapKit
 
-// MARK: - Models
-
-struct DayTransaction: Equatable {
-    let id: UUID
-    let amount: Int64
-    let categoryId: String?
-    let memo: String?
-}
-
-enum CategoryType: String {
-    /// 지출
-    case 식비 = "식비"
-    case 교통 = "교통"
-    case 취미 = "취미"
-    case 쇼핑 = "쇼핑"
-    case 생활 = "생활"
-    case 의료 = "의료"
-    case 기타 = "기타"
-    /// 수입
-    case 급여 = "급여"
-    case 보너스 = "보너스"
-    case 용돈 = "용돈"
-    case 미분류 = "미분류"
-    
-    
-    static func getCategoryType(for id: String?) -> CategoryType {
-        guard let id = id else { return .미분류 }
-        switch id {
-        case "food": return .식비
-        case "transport": return .교통
-        case "hobby": return .취미
-        case "shopping": return .쇼핑
-        case "life": return .생활
-        case "health": return .의료
-        case "etc_exp": return .기타
-        case "salary": return .급여
-        case "bonus": return .보너스
-        case "gift": return .용돈
-        case "etc_inc": return .기타
-        case "uncat": return .미분류
-        default: return .기타
-        }
-    }
-}
-
 // MARK: - EventLogic
 
 protocol CalendarViewEventLogic where Self: NSObject {
@@ -76,6 +31,7 @@ protocol CalendarViewDisplayLogic where Self: NSObject {
     var displayNaviTitle: PassthroughSubject<String, Never> { get }
 }
 
+
 // MARK: - ViewModel
 
 enum CalendarViewModel {
@@ -89,7 +45,7 @@ enum CalendarViewModel {
 final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLogic {
     
     private let calendarHeightRatio: CGFloat = 0.75
-
+    
     private var monthTotalContainerView: UIView!
     private var monthExpenseAmountLabel: UILabel! // 지출
     private var monthIncomeAmountLabel: UILabel! // 수입
@@ -105,12 +61,10 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     private var summaryList: UIStackView!
     
     private var plusButton: UIButton!
-
+    
     private var months: [[CalendarDay]] = []
     private var monthBases: [Date] = [] // 각 섹션에 해당하는 월의 첫날들
     private var transactionsByDay: [Date: [DayTransaction]] = [:]
-
-    var centerSectionIndex: Int = 500
     
     var currentPage: Int = 2
     var selectedIndexPath: IndexPath?
@@ -129,7 +83,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     var didTapTransactionRow: PassthroughSubject<UUID, Never> = .init()
     
     var displayNaviTitle: PassthroughSubject<String, Never> = .init()
-
+    
     
     // MARK: instantiate
     
@@ -153,7 +107,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     }
     
     
-    // MARK: MakeViewLayout
+    // MARK: makeViewLayout
     
     private func makeViewLayout() {
         self.backgroundColor = .white
@@ -166,7 +120,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 $0.leading.trailing.equalToSuperview()
                 $0.height.equalTo(50)
             }
-
+            
             let stack = UIStackView().do {
                 $0.axis = .horizontal
                 $0.alignment = .center
@@ -179,7 +133,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             stack.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
             }
-
+            
             // 수입
             UIStackView().do { hStack in
                 hStack.axis = .horizontal
@@ -226,7 +180,8 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 }
             }
             
-            self.separateLine = UIView().do {
+            // separateLine
+            UIView().do {
                 $0.backgroundColor = .separator
                 
                 container.addSubview($0)
@@ -238,6 +193,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             }
         }
         
+        // 요일
         self.weekHeader.do {
             self.addSubview($0)
             $0.snp.makeConstraints {
@@ -247,6 +203,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             }
         }
         
+        // 캘린더
         let layout = self.makeCalendarLayout()
         self.calendarCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout).do {
             $0.backgroundColor = .clear
@@ -276,6 +233,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             }
         }
         
+        // 내역 요약
         self.summaryScrollView = UIScrollView().do { scrollView in
             self.addSubview(scrollView)
             scrollView.snp.makeConstraints {
@@ -283,7 +241,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 $0.bottom.equalTo(self.safeAreaLayoutGuide.snp.bottom)
                 $0.leading.trailing.equalToSuperview()
             }
-
+            
             self.summaryContainerView = UIView().do { container in
                 scrollView.addSubview(container)
                 container.snp.makeConstraints {
@@ -311,7 +269,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                     mainStack.spacing = 6
                     mainStack.isLayoutMarginsRelativeArrangement = true
                     mainStack.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 20, right: 16)
-
+                    
                     container.addSubview(mainStack)
                     mainStack.snp.makeConstraints {
                         $0.top.equalTo(self.summaryDayLabel.snp.bottom)
@@ -383,13 +341,14 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     }
     
     
-    // MARK: makeViewEvents
+    // MARK: makeEvents
     
     private func makeEvents() {
         self.plusButton.do {
-            $0.tapPublisher.sink {
-                self.didTapPlusButton.send(self.resolveSelectedDate())
-            }.store(in: &cancellables)
+            $0.tapPublisher
+                .sink {
+                    self.didTapPlusButton.send(self.resolveSelectedDate())
+                }.store(in: &cancellables)
         }
     }
     
@@ -432,6 +391,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
         }
     }
     
+    /// 이전 '월' 캘린더 -> UI 업데이트
     func displayPreviousMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [DayTransaction]]) {
         self.months.insert(newDays, at: 0)
         self.monthBases.insert(newMonth, at: 0)
@@ -467,7 +427,8 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             })
         }
     }
-
+    
+    /// 다음 '월' 캘린더 -> UI 업데이트
     func displayNextMonthInfo(newDays: [CalendarDay], newMonth: Date, transactionsByDay: [Date: [DayTransaction]]) {
         let insertIndex = self.months.count
         self.months.append(newDays)
@@ -480,7 +441,8 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             self.calendarCollectionView.insertSections(IndexSet(integer: insertIndex))
         }
     }
-
+    
+    /// 내역 추가/삭제 반영 -> UI 업데이트
     func displayUpdatedTransactions(_ transactionsByDay: [Date: [DayTransaction]]) {
         /// 1) 삭제 반영:  입력으로 온 월 범위 내 기존 키 중, 새 데이터에 존재하지 않는 키는 제거
         let calendar = Calendar.current
@@ -492,16 +454,17 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             }
             keysToRemove.forEach { self.transactionsByDay.removeValue(forKey: $0) }
         }
-
+        
         /// 2) 업데이트/추가 반영: 해당 키는 새 값으로 교체
         self.transactionsByDay.merge(transactionsByDay) { _, new in new }
         self.calendarCollectionView.reloadData()
-        // 선택된 날짜 또는 오늘 날짜에 대한 요약 갱신
+        /// 선택된 날짜 또는 오늘 날짜에 대한 요약 갱신
         self.reloadSummaryList(for: self.resolveSelectedDate())
-        // 현재 보이는 페이지 기준 월 합계 갱신
+        /// 현재 보이는 페이지 기준 월 합계 갱신
         self.updateMonthTotals(forPageIndex: self.currentPageIndex())
     }
     
+    /// 화면 Navi Title 업데이트
     func updateMonthTitle(forPageIndex pageIndex: Int) {
         guard self.months.indices.contains(pageIndex),
               let currentDate = self.months[pageIndex].first(where: { $0.isInCurrentMonth })?.date else {
@@ -516,13 +479,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
         self.displayNaviTitle.send(monthText)
     }
     
-    func updateSummaryDayTitle(currentDate: Date) {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "ko_KR")
-        formatter.dateFormat = "yyyy년 MM월 dd일"
-        self.summaryDayLabel.text = formatter.string(from: currentDate)
-    }
-
+    /// '월' 지출/수입 내역 합계 금액 업데이트
     private func updateMonthTotals(forPageIndex pageIndex: Int) {
         guard self.months.indices.contains(pageIndex),
               let baseDate = self.months[pageIndex].first(where: { $0.isInCurrentMonth })?.date else {
@@ -530,7 +487,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             self.monthExpenseAmountLabel?.text = "0원"
             return
         }
-
+        
         let cal = Calendar.current
         var income: Int64 = 0
         var expense: Int64 = 0
@@ -545,22 +502,31 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 }
             }
         }
-
+        
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         let incomeText = formatter.string(from: NSNumber(value: income)) ?? "0"
         let expenseText = formatter.string(from: NSNumber(value: abs(expense))) ?? "0"
-
+        
         self.monthIncomeAmountLabel?.text = "+\(incomeText)원"
         self.monthExpenseAmountLabel?.text = "-\(expenseText)원"
     }
-
+    
+    /// '일' 내역 요약 Title 업데이트
+    func updateSummaryDayTitle(currentDate: Date) {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy년 MM월 dd일"
+        self.summaryDayLabel.text = formatter.string(from: currentDate)
+    }
+    
     private func resolveSelectedDate() -> Date {
         if let selectedIndexPath = self.selectedIndexPath,
            self.months.indices.contains(selectedIndexPath.section),
            self.months[selectedIndexPath.section].indices.contains(selectedIndexPath.item) {
             return self.months[selectedIndexPath.section][selectedIndexPath.item].date
         }
+        
         return Date()
     }
 }
@@ -585,7 +551,7 @@ extension CalendarView: UICollectionViewDelegate, UICollectionViewDataSource {
             amounts: amounts)
         )
         
-        // 셀 선택 상태 반영
+        /// 셀 선택 상태 반영
         let isSelected = (indexPath == self.selectedIndexPath)
         cell.displaySelectedStyle(isSelected)
         
@@ -593,7 +559,7 @@ extension CalendarView: UICollectionViewDelegate, UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        // 이전 선택 셀 해제
+        /// 이전 선택 셀 해제
         if let previousIndexPath = self.selectedIndexPath {
             if let previousCell = collectionView.cellForItem(at: previousIndexPath) as? DateCell {
                 previousCell.displaySelectedStyle(false)
@@ -602,17 +568,17 @@ extension CalendarView: UICollectionViewDelegate, UICollectionViewDataSource {
             }
         }
         
-        // 현재 선택 셀 표시
+        /// 현재 선택 셀 표시
         if let currentCell = collectionView.cellForItem(at: indexPath) as? DateCell {
             currentCell.displaySelectedStyle(true)
-        
-            // 일 지출 내역 요약 날짜 세팅
+            
+            /// 일 지출 내역 요약 날짜 세팅
             let currentDate = self.months[indexPath.section][indexPath.item].date
             self.updateSummaryDayTitle(currentDate: currentDate)
             self.reloadSummaryList(for: currentDate)
         }
         
-        // 새로운 선택 위치/날짜 저장
+        /// 새로운 선택 위치/날짜 저장
         self.selectedIndexPath = indexPath
         self.selectedDate = Calendar.current.startOfDay(for: self.months[indexPath.section][indexPath.item].date)
     }
@@ -621,6 +587,7 @@ extension CalendarView: UICollectionViewDelegate, UICollectionViewDataSource {
 // MARK: - Summary List Rendering
 
 extension CalendarView {
+    
     private func indexPath(for date: Date) -> IndexPath? {
         let key = Calendar.current.startOfDay(for: date)
         for (section, days) in self.months.enumerated() {
@@ -630,15 +597,15 @@ extension CalendarView {
         }
         return nil
     }
-
+    
     private func remapSelectionIndexPath() {
         guard let selectedDate else { return }
         let newPath = self.indexPath(for: selectedDate)
         guard let newPath else { return }
-
+        
         let oldPath = self.selectedIndexPath
         self.selectedIndexPath = newPath
-
+        
         if let old = oldPath, old != newPath {
             if let oldCell = self.calendarCollectionView.cellForItem(at: old) as? DateCell {
                 oldCell.displaySelectedStyle(false)
@@ -658,14 +625,14 @@ extension CalendarView {
             self.summaryList.removeArrangedSubview(view)
             view.removeFromSuperview()
         }
-
+        
         let key = Calendar.current.startOfDay(for: date)
         let items = self.transactionsByDay[key] ?? []
         guard !items.isEmpty else { return }
-
+        
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
-
+        
         for item in items {
             let row = SummaryRowView()
             let text = formatter.string(from: NSNumber(value: abs(item.amount))) ?? "0"
@@ -675,12 +642,12 @@ extension CalendarView {
                           amountText: (item.amount < 0 ? "-" : "+") + text,
                           memo: item.memo,
                           tint: signColor)
-            // 내역 삭제
+            /// 내역 삭제
             row.onTapDelete = { [weak self] in
                 guard let self else { return }
                 self.didTapDeleteTransaction.send((item.id, date))
             }
-            // 내역 상세
+            /// 내역 상세
             row.onTapRow = { [weak self] in
                 self?.didTapTransactionRow.send(item.id)
             }
@@ -700,26 +667,26 @@ extension CalendarView {
 extension CalendarView: UIScrollViewDelegate {
     
     func currentPageIndex() -> Int {
-        let pageWidth = calendarCollectionView.bounds.width
+        let pageWidth = self.calendarCollectionView.bounds.width
         guard pageWidth > 0 else { return 0 }
-        return Int((calendarCollectionView.contentOffset.x + pageWidth / 2) / pageWidth)
+        return Int((self.calendarCollectionView.contentOffset.x + pageWidth / 2) / pageWidth)
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         self.currentPage = self.currentPageIndex()
         
-        // ✅ 실제 보이는 페이지에 따라 제목 업데이트
+        /// 실제 보이는 페이지에 따라 제목 업데이트
         self.updateMonthTitle(forPageIndex: currentPage)
-        // ✅ 월 합계 업데이트
+        /// 월 합계 업데이트
         self.updateMonthTotals(forPageIndex: currentPage)
         
-        // 🔁 안전한 조건에서만 확장
-        if currentPage <= 1 {
+        /// 안전한 조건에서만 확장
+        if self.currentPage <= 1 {
             guard let firstMonth = monthBases.first,
                   let newMonth = Calendar.current.date(byAdding: .month, value: -1, to: firstMonth) else { return }
             
             self.requestPreviousMonthInfo.send(newMonth)
-        } else if currentPage >= months.count - 2 {
+        } else if self.currentPage >= months.count - 2 {
             guard let lastMonth = self.monthBases.last,
                   let newMonth = Calendar.current.date(byAdding: .month, value: 1, to: lastMonth) else { return }
             
