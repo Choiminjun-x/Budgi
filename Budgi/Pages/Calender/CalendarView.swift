@@ -112,7 +112,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     private func makeViewLayout() {
         self.backgroundColor = .white
         
-        // 월 수입/지출 합계 영역
+        /// 월 수입/지출 합계 영역
         self.monthTotalContainerView = UIView().do { container in
             self.addSubview(container)
             container.snp.makeConstraints {
@@ -134,7 +134,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 make.edges.equalToSuperview()
             }
             
-            // 수입
+            /// 수입
             UIStackView().do { hStack in
                 hStack.axis = .horizontal
                 stack.addArrangedSubview(hStack)
@@ -157,7 +157,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 }
             }
             
-            // 지출
+            /// 지출
             UIStackView().do { hStack in
                 hStack.axis = .horizontal
                 stack.addArrangedSubview(hStack)
@@ -180,7 +180,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 }
             }
             
-            // separateLine
+            /// separateLine
             UIView().do {
                 $0.backgroundColor = .separator
                 
@@ -193,7 +193,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             }
         }
         
-        // 요일
+        /// 요일
         self.weekHeader.do {
             self.addSubview($0)
             $0.snp.makeConstraints {
@@ -203,7 +203,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             }
         }
         
-        // 캘린더
+        /// 캘린더
         let layout = self.makeCalendarLayout()
         self.calendarCollectionView = UICollectionView(frame: .zero, collectionViewLayout: layout).do {
             $0.backgroundColor = .clear
@@ -233,7 +233,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             }
         }
         
-        // 내역 요약
+        /// 내역 요약
         self.summaryScrollView = UIScrollView().do { scrollView in
             self.addSubview(scrollView)
             scrollView.snp.makeConstraints {
@@ -296,7 +296,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
     
     private func makeCalendarLayout() -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, environment in
-            // 섹션(월)별 일수에 따라 4/5/6행 계산
+            /// 섹션(월)별 일수에 따라 4/5/6행 계산
             let daysCount = self?.months.indices.contains(sectionIndex) == true ? self?.months[sectionIndex].count : 42
             let resolvedCount = daysCount ?? 42
             let rowCount: Int
@@ -308,11 +308,11 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 rowCount = 6
             }
             
-            // 컬렉션뷰(컨테이너) 높이를 행 수로 나눠 셀 높이 산정
+            /// 컬렉션뷰(컨테이너) 높이를 행 수로 나눠 셀 높이 산정
             let containerHeight = environment.container.effectiveContentSize.height
             let itemLength = floor(containerHeight / CGFloat(rowCount))
             
-            // 가로 1/7, 세로는 행 높이
+            /// 가로 1/7, 세로는 행 높이
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1.0 / 7.0),
                 heightDimension: .fractionalHeight(1.0)
@@ -370,7 +370,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             self.updateMonthTitle(forPageIndex: centerIndex)
             self.updateMonthTotals(forPageIndex: centerIndex)
             
-            // 초기 선택/요약: 오늘 날짜를 선택 상태로 표시하고 목록 업데이트
+            /// 초기 선택/요약: 오늘 날짜를 선택 상태로 표시하고 목록 업데이트
             if self.months.indices.contains(centerIndex),
                let todayIndex = self.months[centerIndex].firstIndex(where: { $0.isToday }) {
                 let todayPath = IndexPath(item: todayIndex, section: centerIndex)
@@ -383,7 +383,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                     self.calendarCollectionView.reloadItems(at: [todayPath])
                 }
                 
-                // 내역 업데이트
+                /// 내역 업데이트
                 let todayDate = self.months[centerIndex][todayIndex].date
                 self.updateSummaryDayTitle(currentDate: todayDate)
                 self.reloadSummaryList(for: todayDate)
@@ -411,7 +411,7 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
             self.calendarCollectionView.performBatchUpdates({
                 self.calendarCollectionView.insertSections(IndexSet(integer: 0))
             }, completion: { _ in
-                // 레이아웃 확정 후 오프셋 보정 -> scrollToItem은 점프감 때문에 offest 조정
+                /// 레이아웃 확정 후 오프셋 보정 -> scrollToItem은 점프감 때문에 offest 조정
                 self.calendarCollectionView.layoutIfNeeded()
                 let newOffset = CGPoint(x: previousOffset.x + pageWidth, y: previousOffset.y)
                 self.calendarCollectionView.setContentOffset(newOffset, animated: false)
@@ -419,7 +419,8 @@ final class CalendarView: UIView, CalendarViewEventLogic, CalendarViewDisplayLog
                 self.currentPage += 1
                 self.updateMonthTitle(forPageIndex: self.currentPage)
                 self.updateMonthTotals(forPageIndex: self.currentPage)
-                // 섹션 인덱스가 시프트 되었으므로, 선택된 날짜 기준으로 선택 인덱스 재매핑
+                
+                /// 섹션 인덱스가 시프트 되었으므로, 선택된 날짜 기준으로 선택 인덱스 재매핑
                 self.remapSelectionIndexPath()
                 
                 self.calendarCollectionView.isUserInteractionEnabled = true
